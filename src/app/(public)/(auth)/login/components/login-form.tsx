@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Shield } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoadingText } from "@/components/ui/loading-text";
+import { MainLogo } from "@/components/ui/main-logo";
 
 import { GitHubIcon } from "@/components/icons/github-icon";
 import { GoogleIcon } from "@/components/icons/google-icon";
@@ -48,14 +48,8 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Form {...form}>
         <div className="flex flex-col gap-6">
-          {/* Header */}
           <div className="flex flex-col items-center gap-2">
-            <Link
-              href="/"
-              className="flex flex-col items-center gap-2 font-medium"
-            >
-              <Shield className="size-6" />
-            </Link>
+            <MainLogo />
             <h1 className="text-xl font-bold">Welcome to SafeScreen</h1>
             <p className="text-center text-sm">
               Don&apos;t have an account?{" "}

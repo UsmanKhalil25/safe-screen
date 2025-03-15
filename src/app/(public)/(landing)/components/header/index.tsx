@@ -52,7 +52,7 @@ function Header() {
             </SheetHeader>
           </SheetContent>
         </Sheet>
-        <MainLogo className="mr-6 hidden lg:flex group" />
+        <MainLogo className="mr-6 hidden lg:flex" />
         <NavigationMenu className="hidden lg:flex">
           <NavigationMenuList>
             {NAV_LINKS.map((link, index) => (

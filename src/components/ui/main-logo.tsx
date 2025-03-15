@@ -3,12 +3,13 @@ import { Shield } from "lucide-react";
 
 interface MainLogoProps {
   className?: string;
+  path?: string;
 }
 
-function MainLogo({ className = "" }: MainLogoProps) {
+function MainLogo({ className = "", path = "/" }: MainLogoProps) {
   return (
-    <Link href="/" className={className} prefetch={false}>
-      <Shield className="h-6 w-6 transition-transform duration-500 group-hover:rotate-360" />
+    <Link href={path} className={className} prefetch={false}>
+      <Shield className="h-6 w-6 transition-transform duration-500 hover:rotate-360" />
     </Link>
   );
 }
