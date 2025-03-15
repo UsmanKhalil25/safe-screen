@@ -1,13 +1,21 @@
 import Link from "next/link";
-import { Menu, Shield } from "lucide-react";
+import { Menu } from "lucide-react";
 
 import {
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
-import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetDescription,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { MainLogo } from "@/components/ui/main-logo";
 
 const NAV_LINKS = [
   {
@@ -23,11 +31,10 @@ const NAV_LINKS = [
     label: "Pricing",
   },
 ];
-
 function Header() {
   return (
-    <div className="container mx-auto px-4 md:px-6 lg:px-8">
-      <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6">
+    <div className="sticky top-0 z-50 backdrop-blur-lg bg-white/70 dark:bg-gray-950/70 border-b border-gray-200 dark:border-gray-800">
+      <header className="container h-16 mx-auto flex w-full shrink-0 items-center px-4 md:px-6 ">
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="lg:hidden">
@@ -36,26 +43,16 @@ function Header() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left">
-            <Link href="#" prefetch={false}>
-              <Shield className="h-6 w-6" />
-            </Link>
-            <div className="grid gap-2 py-6">
-              {NAV_LINKS.map((link, index) => (
-                <Link
-                  key={index}
-                  href={link.path}
-                  className="flex w-full items-center py-2 text-lg font-semibold"
-                  prefetch={false}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
+            <SheetHeader>
+              <SheetTitle>Edit profile</SheetTitle>
+              <SheetDescription>
+                Make changes to your profile here. Click save when you&apos;re
+                done.
+              </SheetDescription>
+            </SheetHeader>
           </SheetContent>
         </Sheet>
-        <Link href="#" className="mr-6 hidden lg:flex" prefetch={false}>
-          <Shield className="h-6 w-6" />
-        </Link>
+        <MainLogo className="mr-6 hidden lg:flex group" />
         <NavigationMenu className="hidden lg:flex">
           <NavigationMenuList>
             {NAV_LINKS.map((link, index) => (

@@ -145,7 +145,7 @@ export function LoginForm({
                 variant="outline"
                 className="w-full flex items-center gap-2"
               >
-                <GoogleIcon />
+                <GoogleIcon className="w-5 h-5" />
                 Continue with Google
               </Button>
             </div>
