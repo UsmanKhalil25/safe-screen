@@ -72,7 +72,7 @@ function PricingSection() {
               Simple, transparent pricing
             </h2>
             <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Choose the plan that's right for you or your team.
+              Choose the plan that&apos;s right for you or your team.
             </p>
           </div>
         </AnimatedSection>
