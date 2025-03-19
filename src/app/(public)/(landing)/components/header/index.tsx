@@ -16,18 +16,25 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { MainLogo } from "@/components/ui/main-logo";
+import { SECTION_IDS } from "../../constants";
+
+const prefixHash = (id: string) => `#${id}`;
 
 const NAV_LINKS = [
   {
-    path: "#features",
+    path: prefixHash(SECTION_IDS.FEATURES),
     label: "Features",
   },
   {
-    path: "#how-it-works",
+    path: prefixHash(SECTION_IDS.HOW_IT_WORKS),
     label: "How it works",
   },
   {
-    path: "#pricing",
+    path: prefixHash(SECTION_IDS.TESTIMONIALS),
+    label: "Testimonials",
+  },
+  {
+    path: prefixHash(SECTION_IDS.PRICING),
     label: "Pricing",
   },
 ];
@@ -44,10 +51,20 @@ function Header() {
           </SheetTrigger>
           <SheetContent side="left">
             <SheetHeader>
-              <SheetTitle>Edit profile</SheetTitle>
-              <SheetDescription>
-                Make changes to your profile here. Click save when you&apos;re
-                done.
+              <SheetTitle>
+                <MainLogo />
+              </SheetTitle>
+              <SheetDescription className="grid gap-4 py-6">
+                {NAV_LINKS.map((link, index) => (
+                  <Link
+                    key={index}
+                    href={link.path}
+                    className="text-lg font-semibold text-primary"
+                    prefetch={false}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
               </SheetDescription>
             </SheetHeader>
           </SheetContent>

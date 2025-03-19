@@ -39,7 +39,7 @@ function HeroSection() {
           </AnimatedSection>
           <AnimatedSection
             direction="right"
-            className="flex items-center justify-center"
+            className="items-center justify-center hidden lg:flex"
             duration={0.7}
           >
             <HeroImage />
