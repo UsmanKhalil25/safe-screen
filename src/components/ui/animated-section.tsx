@@ -24,13 +24,11 @@ export function AnimatedSection({
   once = true,
   direction = "up",
   distance = 50,
-  threshold = 0.15,
 }: AnimatedSectionProps) {
   const controls = useAnimation();
   const ref = useRef(null);
   const isInView = useInView(ref, {
     once,
-    threshold,
   });
 
   useEffect(() => {

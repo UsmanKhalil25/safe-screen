@@ -26,13 +26,11 @@ export function StaggeredItems({
   direction = "up",
   distance = 30,
   containerDelay = 0,
-  threshold = 0.15,
 }: StaggeredItemsProps) {
   const controls = useAnimation();
   const ref = useRef(null);
   const isInView = useInView(ref, {
     once,
-    threshold,
   });
 
   useEffect(() => {

@@ -1,9 +1,11 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
   Form,
@@ -13,6 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoadingText } from "@/components/ui/loading-text";
@@ -22,12 +25,10 @@ import { GitHubIcon } from "@/components/icons/github-icon";
 import { GoogleIcon } from "@/components/icons/google-icon";
 
 import { LoginSchema, loginSchema } from "@/lib/schemas";
-import { useState } from "react";
+import { showToast } from "@/lib/toast-helper";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+export function LoginForm() {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<LoginSchema>({
@@ -38,14 +39,40 @@ export function LoginForm({
   const onSubmit = async (data: LoginSchema) => {
     setIsSubmitting(true);
     try {
-      console.log("Submitting the form", data);
+      const result = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        showToast(
+          "error",
+          "Login failed",
+          "Invalid email or password. Please try again."
+        );
+      } else {
+        showToast(
+          "success",
+          "Login successful",
+          "Welcome back! You are now logged in."
+        );
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      showToast(
+        "error",
+        "Login failed",
+        "An unexpected error occurred. Please try again later."
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className="flex flex-col gap-6">
       <Form {...form}>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2">
