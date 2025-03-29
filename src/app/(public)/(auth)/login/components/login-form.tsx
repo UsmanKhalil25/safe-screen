@@ -53,7 +53,7 @@ export function LoginForm({
             <h1 className="text-xl font-bold">Welcome to SafeScreen</h1>
             <p className="text-center text-sm">
               Don&apos;t have an account?{" "}
-              <Link href="/sign-up" className="underline underline-offset-4">
+              <Link href="/register" className="underline underline-offset-4">
                 Sign up
               </Link>
             </p>

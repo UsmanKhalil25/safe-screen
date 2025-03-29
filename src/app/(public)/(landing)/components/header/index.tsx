@@ -92,7 +92,7 @@ function Header() {
             </Link>
           </Button>
           <Button asChild>
-            <Link href="/sign-up" prefetch={true}>
+            <Link href="/register" prefetch={true}>
               Get Started
             </Link>
           </Button>

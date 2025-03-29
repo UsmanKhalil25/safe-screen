@@ -1,9 +1,10 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 
 import {
   Form,
@@ -20,14 +21,12 @@ import { MainLogo } from "@/components/ui/main-logo";
 
 import { GitHubIcon } from "@/components/icons/github-icon";
 import { GoogleIcon } from "@/components/icons/google-icon";
-import { useState } from "react";
 
 import { registerSchema, RegisterSchema } from "@/lib/schemas";
+import { showToast } from "@/lib/toast-helper";
 
-export function SignUpForm({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+export function RegisterForm() {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<RegisterSchema>({
@@ -42,15 +41,77 @@ export function SignUpForm({
 
   const onSubmit = async (data: RegisterSchema) => {
     setIsSubmitting(true);
+
     try {
-      console.log("Submitting the form", data);
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        if (response.status === 409) {
+          form.setError("email", {
+            type: "manual",
+            message: "This email is already registered",
+          });
+          showToast(
+            "error",
+            "Email already registered",
+            "This email is already registered."
+          );
+          return;
+        }
+
+        if (response.status === 400 && result.details) {
+          Object.entries(result.details).forEach(([key, value]) => {
+            if (key in form.formState.errors) {
+              form.setError(key as keyof RegisterSchema, {
+                type: "manual",
+                message: Array.isArray(value) ? value[0] : String(value),
+              });
+            }
+          });
+          showToast(
+            "error",
+            "Validation error",
+            "Please check the form for errors."
+          );
+          return;
+        }
+
+        showToast(
+          "error",
+          "Something went wrong",
+          result.error || "Failed to create account. Please try again."
+        );
+        return;
+      }
+
+      showToast(
+        "success",
+        "Account created!",
+        "Your account has been successfully created."
+      );
+
+      router.push("/login");
+    } catch (error) {
+      console.error("Registration error:", error);
+      showToast(
+        "error",
+        "Registration error",
+        "An error occurred while creating your account. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className="flex flex-col gap-6">
       <Form {...form}>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2">
@@ -163,6 +224,8 @@ export function SignUpForm({
               <Button
                 variant="outline"
                 className="w-full flex items-center gap-2"
+                onClick={() => {}}
+                type="button"
               >
                 <GitHubIcon />
                 Continue with GitHub
@@ -170,6 +233,8 @@ export function SignUpForm({
               <Button
                 variant="outline"
                 className="w-full flex items-center gap-2"
+                onClick={() => {}}
+                type="button"
               >
                 <GoogleIcon className="w-5 h-5" />
                 Continue with Google

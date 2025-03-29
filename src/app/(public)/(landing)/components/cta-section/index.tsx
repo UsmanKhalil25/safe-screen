@@ -31,7 +31,7 @@ function CTASection() {
                 className="text-primary"
                 asChild
               >
-                <Link href="/sign-up" prefetch={true}>
+                <Link href="/register" prefetch={true}>
                   Get Started
                 </Link>
               </Button>

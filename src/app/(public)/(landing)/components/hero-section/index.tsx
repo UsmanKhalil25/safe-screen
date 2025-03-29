@@ -31,7 +31,7 @@ function HeroSection() {
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
               <Button size="lg" className="gap-1" asChild>
-                <Link href="/sign-up" prefetch={true}>
+                <Link href="/register" prefetch={true}>
                   Get Started <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
