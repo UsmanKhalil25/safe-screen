@@ -10,7 +10,7 @@ export default function NotFoundPage() {
             404
           </h1>
           <p className="text-muted-foreground">
-            Looks like you've ventured into the unknown digital realm.
+            Looks like you&#39;ve ventured into the unknown digital realm.
           </p>
         </div>
         <Button asChild>
