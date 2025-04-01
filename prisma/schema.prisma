@@ -8,10 +8,23 @@ datasource db {
 }
 
 model User {
-  id         Int     @id @default(autoincrement())
-  email      String  @unique
-  name       String
-  password   String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id              Int       @id @default(autoincrement())
+  email           String    @unique
+  name            String
+  password        String
+  files           File[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model File {
+  id              Int       @id @default(autoincrement())
+  name            String
+  mimetype        String
+  path            String
+  size            Int
+  user            User      @relation(fields: [userId], references: [id])
+  userId          Int   
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }

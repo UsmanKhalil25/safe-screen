@@ -1,9 +1,10 @@
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaClient } from "@prisma/client";
 import { compare } from "bcrypt";
 
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
+
+const EXPIRATION_TIME = 60 * 60 * 24; // 1 day
 
 const handler = NextAuth({
   session: {
@@ -12,9 +13,13 @@ const handler = NextAuth({
   pages: {
     signIn: "/login",
   },
+  jwt: {
+    maxAge: EXPIRATION_TIME,
+  },
   providers: [
     CredentialsProvider({
       name: "Credentials",
+
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
