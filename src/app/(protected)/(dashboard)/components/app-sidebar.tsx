@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/sidebar";
 import { MainLogo } from "@/components/ui/main-logo";
 
-import { NavUser } from "./nav-user";
+import { UserNav } from "./user-nav";
 
 const NAV_ITEMS = [
   {
@@ -49,7 +49,7 @@ const USER = {
   avatar: "/avatars/shadcn.jpg",
 };
 
-function MainSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const currentPath = usePathname();
 
   const isActive = (url: string) => {
@@ -91,11 +91,11 @@ function MainSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={USER} />
+        <UserNav user={USER} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );
 }
 
-export { MainSidebar };
+export { AppSidebar };
