@@ -1,4 +1,5 @@
 "use client";
+import { signOut } from "next-auth/react";
 
 import {
   BadgeCheck,
@@ -36,6 +37,47 @@ export function UserNav({
   };
 }) {
   const { isMobile } = useSidebar();
+
+  const handleLogOut = () => {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+    signOut({ callbackUrl: `${appUrl}/login` });
+  };
+
+  const DROPDOWN_OPTIONS = [
+    {
+      label: "Upgrade to Pro",
+      icon: <Sparkles />,
+      action: () => console.log("Upgrade to Pro"),
+      group: "top",
+    },
+    {
+      label: "Account",
+      icon: <BadgeCheck />,
+      action: () => console.log("Account"),
+      group: "main",
+    },
+    {
+      label: "Billing",
+      icon: <CreditCard />,
+      action: () => console.log("Billing"),
+      group: "main",
+    },
+    {
+      label: "Notifications",
+      icon: <Bell />,
+      action: () => console.log("Notifications"),
+      group: "main",
+    },
+    {
+      label: "Log out",
+      icon: <LogOut />,
+      action: handleLogOut,
+      group: "bottom",
+    },
+  ];
+
+  const getGroupedItems = (groupName: string) =>
+    DROPDOWN_OPTIONS.filter((item) => item.group === groupName);
 
   return (
     <SidebarMenu>
@@ -75,33 +117,46 @@ export function UserNav({
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              Log out
-            </DropdownMenuItem>
+
+            {getGroupedItems("top").length > 0 && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  {getGroupedItems("top").map(({ label, icon, action }) => (
+                    <DropdownMenuItem key={label} onSelect={action}>
+                      {icon}
+                      <span className="ml-2">{label}</span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuGroup>
+              </>
+            )}
+
+            {getGroupedItems("main").length > 0 && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  {getGroupedItems("main").map(({ label, icon, action }) => (
+                    <DropdownMenuItem key={label} onSelect={action}>
+                      {icon}
+                      <span className="ml-2">{label}</span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuGroup>
+              </>
+            )}
+
+            {getGroupedItems("bottom").length > 0 && (
+              <>
+                <DropdownMenuSeparator />
+                {getGroupedItems("bottom").map(({ label, icon, action }) => (
+                  <DropdownMenuItem key={label} onSelect={action}>
+                    {icon}
+                    <span className="ml-2">{label}</span>
+                  </DropdownMenuItem>
+                ))}
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
