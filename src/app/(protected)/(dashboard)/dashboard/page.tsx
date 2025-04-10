@@ -1,17 +1,12 @@
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  HardDrive,
-  Share2,
-  ShieldCheck,
-  Upload,
-} from "lucide-react";
+import { ArrowUpRight, HardDrive, Share2, ShieldCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 
 import { StatCard } from "./components/stat-card";
+import { UploadFileDialog } from "./components/upload-file-dialog";
 
 const storageUsed = 3.2; // GB
 const storageTotal = 10; // GB
@@ -91,18 +86,7 @@ export default function DashboardPage() {
               Manage your files and secure sharing options.
             </p>
           </div>
-
-          <Button
-            asChild
-            variant="default"
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            <Link href="/files/new">
-              <Upload className="h-4 w-4" />
-              <span>Upload Files</span>
-            </Link>
-          </Button>
+          <UploadFileDialog />
         </div>
       </div>
 

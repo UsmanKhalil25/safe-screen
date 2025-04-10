@@ -27,6 +27,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
+import { showToast } from "@/lib/toast-helper";
+
 export function UserNav({
   user,
 }: {
@@ -39,8 +41,7 @@ export function UserNav({
   const { isMobile } = useSidebar();
 
   const handleLogOut = () => {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-    signOut({ callbackUrl: `${appUrl}/login` });
+    signOut({ callbackUrl: `${process.env.NEXT_PUBLIC_APP_URL}/login` });
   };
 
   const DROPDOWN_OPTIONS = [
