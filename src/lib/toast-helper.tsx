@@ -2,7 +2,7 @@
 
 import { toast } from "sonner";
 
-function showToast(type: string, title: string, description: string) {
+function showToast(type: string, title: string, description?: string) {
   const toastOptions = {
     description: description ? (
       <span className="text-muted-foreground">{description}</span>

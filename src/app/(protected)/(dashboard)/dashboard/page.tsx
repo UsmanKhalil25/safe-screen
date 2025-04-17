@@ -12,7 +12,12 @@ const storageUsed = 3.2; // GB
 const storageTotal = 10; // GB
 const storagePercentage = (storageUsed / storageTotal) * 100;
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const data = await fetch("/api/files");
+
+  const files = await data.json();
+  console.log("files: ", files);
+
   const statCards = [
     {
       title: "Storage",
