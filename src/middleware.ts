@@ -7,9 +7,8 @@ const publicRoutes = ["/login", "/signup", "/"];
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const token = await getToken({ req });
-  console.log("token: ", token);
+
   const isAuthRoute = /^\/api\/auth\//.test(path);
-  console.log("path: ", path);
   if (path.startsWith("/api") && !isAuthRoute) {
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

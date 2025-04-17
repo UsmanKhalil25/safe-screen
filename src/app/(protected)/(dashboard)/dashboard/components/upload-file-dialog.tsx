@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
-import { Upload, X, FileText, ImageIcon, File } from "lucide-react";
+import { Upload, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +18,7 @@ import {
 import { cn } from "@/lib/utils";
 import { LoadingText } from "@/components/ui/loading-text";
 import { showToast } from "@/lib/toast-helper";
+import { useFileIcon } from "@/hooks/use-file-icon";
 
 interface DragAndDropAreaProps {
   onDrop: (acceptedFiles: File[]) => void;
@@ -59,6 +60,7 @@ function UploadFileDialog() {
   const [file, setFile] = useState<File | null>(null);
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const fileIcon = useFileIcon(file);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const selectedFile = acceptedFiles[0];
@@ -108,17 +110,6 @@ function UploadFileDialog() {
     setFile(null);
   };
 
-  const getFileIcon = () => {
-    if (!file) return <FileText className="h-10 w-10 text-muted-foreground" />;
-    if (file.type.startsWith("image/"))
-      return <ImageIcon className="h-10 w-10 text-blue-500" />;
-    if (file.type.includes("pdf"))
-      return <FileText className="h-10 w-10 text-red-500" />;
-    if (file.type.includes("word") || file.type.includes("document"))
-      return <FileText className="h-10 w-10 text-blue-700" />;
-    return <File className="h-10 w-10 text-gray-500" />;
-  };
-
   const formatFileSize = (bytes: number) => {
     if (bytes < 1024) return `${bytes} bytes`;
     if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -150,7 +141,7 @@ function UploadFileDialog() {
               <div className="flex items-start justify-between">
                 <div className="flex gap-3">
                   <div className="h-16 w-16 rounded-md border bg-muted flex items-center justify-center">
-                    {getFileIcon()}
+                    {fileIcon}
                   </div>
                   <div className="flex flex-col">
                     <p className="font-medium text-sm truncate max-w-[250px]">

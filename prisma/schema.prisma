@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id              Int       @id @default(autoincrement())
+  id              String       @id @default(cuid())
   email           String    @unique
   name            String
   password        String
@@ -18,13 +18,13 @@ model User {
 }
 
 model File {
-  id              Int       @id @default(autoincrement())
+  id              String       @id @default(cuid())
   name            String
   mimetype        String
   path            String
   size            Int
   user            User      @relation(fields: [userId], references: [id])
-  userId          Int   
+  userId          String 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 }

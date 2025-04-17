@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { ArrowUpRight, HardDrive, Share2, ShieldCheck } from "lucide-react";
+import { cookies } from "next/headers";
+import {
+  ArrowUpRight,
+  Files,
+  HardDrive,
+  Share2,
+  ShieldCheck,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -7,16 +14,23 @@ import { Badge } from "@/components/ui/badge";
 
 import { StatCard } from "./components/stat-card";
 import { UploadFileDialog } from "./components/upload-file-dialog";
+import { FilesListing } from "./components/file-listing";
 
 const storageUsed = 3.2; // GB
 const storageTotal = 10; // GB
 const storagePercentage = (storageUsed / storageTotal) * 100;
 
 export default async function DashboardPage() {
-  const data = await fetch("/api/files");
+  const cookieStore = cookies();
+  const BASE_URL = process.env.NEXT_PUBLIC_APP_URL;
+  const response = await fetch(`${BASE_URL}/api/files`, {
+    headers: {
+      Cookie: (await cookieStore).toString(),
+    },
+  });
 
-  const files = await data.json();
-  console.log("files: ", files);
+  const data = await response.json();
+  console.log("data: ", data);
 
   const statCards = [
     {
@@ -108,7 +122,9 @@ export default async function DashboardPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 rounded-xl border bg-card text-card-foreground shadow-sm"></div>
+      <div className="flex-1 rounded-xl border bg-card text-card-foreground shadow-sm">
+        <FilesListing />
+      </div>
     </div>
   );
 }

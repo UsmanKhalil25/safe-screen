@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getToken } from "next-auth/jwt";
 import prisma from "@/lib/prisma";
 import fs from "fs/promises";
@@ -10,11 +11,10 @@ const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
 
 export async function GET(request: NextRequest) {
   const token = await getToken({ req: request, secret });
-  console.log("token: ", token);
   if (!token?.sub) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const userId = parseInt(token.sub);
+  const userId = token.sub;
 
   const { searchParams } = request.nextUrl;
   const pageParam = searchParams.get("page");
@@ -54,11 +54,13 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const REVALIDATION_PATH = "/dashboard";
   const token = await getToken({ req: request, secret });
+
   if (!token?.sub) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const userId = parseInt(token.sub);
+  const userId = token.sub;
 
   try {
     try {
@@ -94,6 +96,8 @@ export async function POST(request: NextRequest) {
         size: file.size,
       },
     });
+
+    revalidatePath(REVALIDATION_PATH);
     return NextResponse.json(
       {
         message: "File has been successfully processed.",
