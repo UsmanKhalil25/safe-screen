@@ -10,7 +10,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   File,
   FileText,
@@ -53,7 +52,7 @@ const mockFiles: FileType[] = Array.from({ length: 50 }).map((_, i) => ({
   updatedAt: new Date(),
 }));
 
-function FilesListing() {
+function FileList() {
   const [currentPage, setCurrentPage] = useState(1);
   const filesPerPage = 10;
   const totalPages = Math.ceil(mockFiles.length / filesPerPage);
@@ -84,35 +83,31 @@ function FilesListing() {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Your Files</h2>
-      <Card>
-        <CardContent className="p-0">
-          <ScrollArea className="h-[500px] rounded-md">
-            <div className="p-4">
-              {paginatedFiles.map((file) => (
-                <div
-                  key={file.id}
-                  className="flex items-center p-3 border-b last:border-0 hover:bg-muted/50 transition-colors"
-                >
-                  <div className="mr-3 text-muted-foreground">
-                    {getFileIcon(file.mimetype)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{file.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {formatFileSize(file.size)} •{" "}
-                      {formatDistanceToNow(file.createdAt, { addSuffix: true })}
-                    </p>
-                  </div>
-                </div>
-              ))}
+    <div className="flex-1 rounded-xl border bg-card text-card-foreground shadow-sm">
+      <h2 className="text-xl font-bold m-4">Your Files</h2>
+      <ScrollArea className="h-[500px] rounded-md">
+        <div className="p-4">
+          {paginatedFiles.map((file) => (
+            <div
+              key={file.id}
+              className="flex items-center p-3 border-b last:border-0 hover:bg-muted/50 transition-colors"
+            >
+              <div className="mr-3 text-muted-foreground">
+                {getFileIcon(file.mimetype)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium truncate">{file.name}</p>
+                <p className="text-sm text-muted-foreground">
+                  {formatFileSize(file.size)} •{" "}
+                  {formatDistanceToNow(file.createdAt, { addSuffix: true })}
+                </p>
+              </div>
             </div>
-          </ScrollArea>
-        </CardContent>
-      </Card>
+          ))}
+        </div>
+      </ScrollArea>
 
-      <div className="mt-4">
+      <div className="m-4">
         <Pagination>
           <PaginationContent>
             <PaginationItem>
@@ -164,4 +159,4 @@ function FilesListing() {
   );
 }
 
-export { FilesListing };
+export { FileList };

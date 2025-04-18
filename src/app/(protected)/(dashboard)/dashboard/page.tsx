@@ -1,12 +1,6 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
-import {
-  ArrowUpRight,
-  Files,
-  HardDrive,
-  Share2,
-  ShieldCheck,
-} from "lucide-react";
+import { ArrowUpRight, HardDrive, Share2, ShieldCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -14,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 
 import { StatCard } from "./components/stat-card";
 import { UploadFileDialog } from "./components/upload-file-dialog";
-import { FilesListing } from "./components/file-listing";
+import { FileList } from "./components/file-list";
 
 const storageUsed = 3.2; // GB
 const storageTotal = 10; // GB
@@ -121,10 +115,7 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 rounded-xl border bg-card text-card-foreground shadow-sm">
-        <FilesListing />
-      </div>
+      <FileList />
     </div>
   );
 }
