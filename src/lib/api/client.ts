@@ -16,22 +16,23 @@ export async function apiClient<T = unknown>({
   headers = {},
 }: ApiClientOptions<T>): Promise<Response> {
   const endpoint = new URL(url);
+  const body = ["POST", "PUT", "PATCH"].includes(method)
+    ? data instanceof FormData
+      ? data
+      : JSON.stringify(data)
+    : undefined;
 
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
       endpoint.searchParams.append(key, String(value));
     });
   }
-
   const response = await fetch(endpoint.toString(), {
     method,
     headers: {
-      "Content-Type": "application/json",
       ...headers,
     },
-    body: ["POST", "PUT", "PATCH"].includes(method)
-      ? JSON.stringify(data)
-      : undefined,
+    body,
   });
 
   if (!response.ok) {

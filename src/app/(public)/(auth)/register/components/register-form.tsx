@@ -49,6 +49,9 @@ export function RegisterForm() {
         url: API_ENDPOINTS.AUTH.REGISTER,
         method: HTTP_METHOD.POST,
         data: data,
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       const result = await response.json();

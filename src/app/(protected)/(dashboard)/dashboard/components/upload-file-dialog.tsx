@@ -136,8 +136,8 @@ function UploadFileDialog() {
         <DialogHeader>
           <DialogTitle>Upload File</DialogTitle>
           <DialogDescription>
-            Drag and drop a file or click to browse. Supported formats: images,
-            PDF, and documents.
+            Drag and drop your files here, or click to browse. You can upload
+            images, documents, audio, video, and more.
           </DialogDescription>
         </DialogHeader>
 
