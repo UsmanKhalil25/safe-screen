@@ -24,6 +24,8 @@ import { GoogleIcon } from "@/components/icons/google-icon";
 
 import { registerSchema, RegisterSchema } from "@/lib/schemas";
 import { showToast } from "@/lib/toast-helper";
+import { apiClient } from "@/lib/api/client";
+import { API_ENDPOINTS, HTTP_METHOD } from "@/constants";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -43,15 +45,14 @@ export function RegisterForm() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+      const response = await apiClient({
+        url: API_ENDPOINTS.AUTH.REGISTER,
+        method: HTTP_METHOD.POST,
+        data: data,
       });
 
       const result = await response.json();
+
       if (!response.ok) {
         if (response.status === 409) {
           form.setError("email", {

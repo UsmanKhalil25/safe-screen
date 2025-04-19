@@ -1,16 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
-import { getToken } from "next-auth/jwt";
-import prisma from "@/lib/prisma";
-import fs from "fs/promises";
-import path from "path";
 import { v4 as uuidv4 } from "uuid";
+import path from "path";
+import { getToken } from "next-auth/jwt";
+import { NextRequest, NextResponse } from "next/server";
+import fs from "fs/promises";
+
+import prisma from "@/lib/prisma";
 
 const secret = process.env.NEXTAUTH_SECRET;
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
 
 export async function GET(request: NextRequest) {
   const token = await getToken({ req: request, secret });
+
   if (!token?.sub) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -19,17 +20,19 @@ export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const pageParam = searchParams.get("page");
   const limitParam = searchParams.get("limit");
+  const sortParam = searchParams.get("sort");
 
   const page = pageParam ? parseInt(pageParam) : 1;
   const limit = limitParam ? parseInt(limitParam) : 10;
   const skip = (page - 1) * limit;
+  const sort = sortParam === "asc" ? "asc" : "desc";
 
   const [files, totalCount] = await Promise.all([
     prisma.file.findMany({
       where: { userId },
       skip,
       take: limit,
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: sort },
     }),
     prisma.file.count({
       where: { userId },
@@ -54,7 +57,6 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const REVALIDATION_PATH = "/dashboard";
   const token = await getToken({ req: request, secret });
 
   if (!token?.sub) {
@@ -97,7 +99,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    revalidatePath(REVALIDATION_PATH);
     return NextResponse.json(
       {
         message: "File has been successfully processed.",

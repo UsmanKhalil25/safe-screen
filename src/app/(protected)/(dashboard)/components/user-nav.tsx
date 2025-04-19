@@ -27,8 +27,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-import { showToast } from "@/lib/toast-helper";
-
 export function UserNav({
   user,
 }: {

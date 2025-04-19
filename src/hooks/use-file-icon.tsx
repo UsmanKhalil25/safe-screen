@@ -11,89 +11,144 @@ import {
   FileCode,
 } from "lucide-react";
 
-export function useFileIcon(inputFile: File | null) {
+interface FileIconOption {
+  fileName?: string;
+  fileType?: string;
+  size?: string;
+  color?: string;
+}
+
+export function useFileIcon({
+  fileName,
+  fileType,
+  size,
+  color,
+}: FileIconOption) {
   return useMemo(() => {
-    const className = "h-10 w-10";
+    const iconSize = size ?? "h-10 w-10";
 
-    if (!inputFile)
-      return <FileText className={`${className} text-muted-foreground`} />;
+    const lowerName = fileName?.toLowerCase() ?? "";
+    const lowerType = fileType?.toLowerCase() ?? "";
 
-    const { type, name } = inputFile;
-    const lowerName = name.toLowerCase();
+    let defaultColor = "text-gray-500";
 
-    if (type.startsWith("image/")) {
-      return <ImageIcon className={`${className} text-blue-500`} />;
-    }
-
-    if (type === "application/pdf" || lowerName.endsWith(".pdf")) {
-      return <FileText className={`${className} text-red-500`} />;
-    }
-
-    if (
-      type.includes("word") ||
+    if (lowerType.startsWith("image/")) {
+      defaultColor = "text-blue-500";
+    } else if (lowerType === "application/pdf" || lowerName.endsWith(".pdf")) {
+      defaultColor = "text-red-500";
+    } else if (
+      lowerType.includes("word") ||
       lowerName.endsWith(".doc") ||
       lowerName.endsWith(".docx")
     ) {
-      return <FileText className={`${className} text-blue-700`} />;
-    }
-
-    if (
-      type.startsWith("audio/") ||
+      defaultColor = "text-blue-700";
+    } else if (
+      lowerType.startsWith("audio/") ||
       lowerName.endsWith(".mp3") ||
       lowerName.endsWith(".wav") ||
       lowerName.endsWith(".ogg")
     ) {
-      return <FileAudio className={`${className} text-purple-500`} />;
-    }
-
-    if (
-      type.startsWith("video/") ||
+      defaultColor = "text-purple-500";
+    } else if (
+      lowerType.startsWith("video/") ||
       lowerName.endsWith(".mp4") ||
       lowerName.endsWith(".mov") ||
       lowerName.endsWith(".avi")
     ) {
-      return <FileVideo className={`${className} text-orange-500`} />;
-    }
-
-    if (
-      type === "application/zip" ||
-      type === "application/x-zip-compressed" ||
+      defaultColor = "text-orange-500";
+    } else if (
+      lowerType === "application/zip" ||
+      lowerType === "application/x-zip-compressed" ||
       lowerName.endsWith(".zip") ||
       lowerName.endsWith(".rar") ||
       lowerName.endsWith(".7z")
     ) {
-      return <Archive className={`${className} text-yellow-600`} />;
-    }
-
-    if (
-      type.includes("spreadsheet") ||
+      defaultColor = "text-yellow-600";
+    } else if (
+      lowerType.includes("spreadsheet") ||
       lowerName.endsWith(".xls") ||
       lowerName.endsWith(".xlsx") ||
       lowerName.endsWith(".csv")
     ) {
-      return <SheetIcon className={`${className} text-green-600`} />;
-    }
-
-    if (
-      type.includes("binary") ||
+      defaultColor = "text-green-600";
+    } else if (
+      lowerType.includes("binary") ||
       lowerName.endsWith(".exe") ||
       lowerName.endsWith(".dmg") ||
       lowerName.endsWith(".apk")
     ) {
-      return <Binary className={`${className} text-gray-700`} />;
-    }
-
-    if (
-      type.includes("text/") ||
+      defaultColor = "text-gray-700";
+    } else if (
+      lowerType.includes("text/") ||
       lowerName.endsWith(".js") ||
       lowerName.endsWith(".ts") ||
       lowerName.endsWith(".html") ||
       lowerName.endsWith(".css") ||
       lowerName.endsWith(".py")
     ) {
-      return <FileCode className={`${className} text-pink-500`} />;
+      defaultColor = "text-pink-500";
     }
 
-    return <File className={`${className} text-gray-500`} />;
-  }, [inputFile]);
+    const iconColor = color ?? defaultColor;
+    const className = `${iconSize} ${iconColor}`;
+
+    if (lowerType.startsWith("image/")) {
+      return <ImageIcon className={className} />;
+    } else if (lowerType === "application/pdf" || lowerName.endsWith(".pdf")) {
+      return <FileText className={className} />;
+    } else if (
+      lowerType.includes("word") ||
+      lowerName.endsWith(".doc") ||
+      lowerName.endsWith(".docx")
+    ) {
+      return <FileText className={className} />;
+    } else if (
+      lowerType.startsWith("audio/") ||
+      lowerName.endsWith(".mp3") ||
+      lowerName.endsWith(".wav") ||
+      lowerName.endsWith(".ogg")
+    ) {
+      return <FileAudio className={className} />;
+    } else if (
+      lowerType.startsWith("video/") ||
+      lowerName.endsWith(".mp4") ||
+      lowerName.endsWith(".mov") ||
+      lowerName.endsWith(".avi")
+    ) {
+      return <FileVideo className={className} />;
+    } else if (
+      lowerType === "application/zip" ||
+      lowerType === "application/x-zip-compressed" ||
+      lowerName.endsWith(".zip") ||
+      lowerName.endsWith(".rar") ||
+      lowerName.endsWith(".7z")
+    ) {
+      return <Archive className={className} />;
+    } else if (
+      lowerType.includes("spreadsheet") ||
+      lowerName.endsWith(".xls") ||
+      lowerName.endsWith(".xlsx") ||
+      lowerName.endsWith(".csv")
+    ) {
+      return <SheetIcon className={className} />;
+    } else if (
+      lowerType.includes("binary") ||
+      lowerName.endsWith(".exe") ||
+      lowerName.endsWith(".dmg") ||
+      lowerName.endsWith(".apk")
+    ) {
+      return <Binary className={className} />;
+    } else if (
+      lowerType.includes("text/") ||
+      lowerName.endsWith(".js") ||
+      lowerName.endsWith(".ts") ||
+      lowerName.endsWith(".html") ||
+      lowerName.endsWith(".css") ||
+      lowerName.endsWith(".py")
+    ) {
+      return <FileCode className={className} />;
+    }
+
+    return <File className={className} />;
+  }, [fileName, fileType, size, color]);
 }

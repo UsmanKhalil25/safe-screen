@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
@@ -15,10 +16,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
 import { LoadingText } from "@/components/ui/loading-text";
+
+import { cn } from "@/lib/utils";
 import { showToast } from "@/lib/toast-helper";
 import { useFileIcon } from "@/hooks/use-file-icon";
+import { apiClient } from "@/lib/api/client";
+import { API_ENDPOINTS, HTTP_METHOD } from "@/constants";
 
 interface DragAndDropAreaProps {
   onDrop: (acceptedFiles: File[]) => void;
@@ -57,10 +61,11 @@ const DragAndDropArea = ({ onDrop }: DragAndDropAreaProps) => {
 };
 
 function UploadFileDialog() {
+  const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const fileIcon = useFileIcon(file);
+  const fileIcon = useFileIcon({ fileName: file?.name, fileType: file?.type });
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const selectedFile = acceptedFiles[0];
@@ -75,9 +80,11 @@ function UploadFileDialog() {
       setUploading(true);
       const formData = new FormData();
       formData.append("file", file);
-      const response = await fetch("/api/files", {
-        method: "POST",
-        body: formData,
+
+      const response = await apiClient({
+        url: API_ENDPOINTS.FILES.BASE,
+        method: HTTP_METHOD.POST,
+        data: formData,
       });
 
       const result = await response.json();
@@ -90,6 +97,7 @@ function UploadFileDialog() {
         "Upload complete",
         result.message || "File has been successfully processed."
       );
+      router.refresh();
     } catch (error) {
       console.error("Error uploading file: ", error);
       showToast(

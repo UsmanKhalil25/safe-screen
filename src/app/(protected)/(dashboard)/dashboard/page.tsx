@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
 import { ArrowUpRight, HardDrive, Share2, ShieldCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -8,24 +7,13 @@ import { Badge } from "@/components/ui/badge";
 
 import { StatCard } from "./components/stat-card";
 import { UploadFileDialog } from "./components/upload-file-dialog";
-import { FileList } from "./components/file-list";
+import { RecentFileList } from "./components/recent-file-list";
 
 const storageUsed = 3.2; // GB
 const storageTotal = 10; // GB
 const storagePercentage = (storageUsed / storageTotal) * 100;
 
 export default async function DashboardPage() {
-  const cookieStore = cookies();
-  const BASE_URL = process.env.NEXT_PUBLIC_APP_URL;
-  const response = await fetch(`${BASE_URL}/api/files`, {
-    headers: {
-      Cookie: (await cookieStore).toString(),
-    },
-  });
-
-  const data = await response.json();
-  console.log("data: ", data);
-
   const statCards = [
     {
       title: "Storage",
@@ -115,7 +103,7 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      <FileList />
+      <RecentFileList />
     </div>
   );
 }
