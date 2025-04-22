@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 
 import { StatCard } from "./components/stat-card";
 import { UploadFileDialog } from "./components/upload-file-dialog";
-import { RecentFileList } from "./components/recent-file-list";
+import { RecentFilesList } from "./components/recent-files-list";
 
 const storageUsed = 3.2; // GB
 const storageTotal = 10; // GB
@@ -103,7 +103,7 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      <RecentFileList />
+      <RecentFilesList />
     </div>
   );
 }

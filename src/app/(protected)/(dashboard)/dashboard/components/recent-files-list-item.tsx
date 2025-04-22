@@ -3,15 +3,15 @@ import { formatDistanceToNow } from "date-fns";
 import { FileSchema } from "@/lib/schemas";
 import { useFileIcon } from "@/hooks/use-file-icon";
 
-interface RecentFileListItemProps {
+interface RecentFilesListItemProps {
   file: FileSchema;
 }
 
-function RecentFileListItem({ file }: RecentFileListItemProps) {
+function RecentFilesListItem({ file }: RecentFilesListItemProps) {
   const fileIcon = useFileIcon({
     fileName: file.name,
     fileType: file.mimetype,
-    size: "h-8 w-8",
+    size: "h-6 w-6",
     color: "text-muted-foreground",
   });
 
@@ -24,12 +24,12 @@ function RecentFileListItem({ file }: RecentFileListItemProps) {
   return (
     <div
       key={file.id}
-      className="flex items-center p-3 border-b last:border-0 hover:bg-muted/50 transition-colors"
+      className="flex items-center px-4 py-2 border-b last:border-0 hover:bg-muted/50 transition-colors"
     >
       <div className="mr-3 text-muted-foreground">{fileIcon}</div>
       <div className="flex-1 min-w-0">
-        <p className="font-medium truncate">{file.name}</p>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm font-semibold truncate">{file.name}</p>
+        <p className="text-xs text-muted-foreground">
           {formatFileSize(file.size)} •{" "}
           {formatDistanceToNow(file.createdAt, { addSuffix: true })}
         </p>
@@ -38,4 +38,4 @@ function RecentFileListItem({ file }: RecentFileListItemProps) {
   );
 }
 
-export { RecentFileListItem };
+export { RecentFilesListItem };

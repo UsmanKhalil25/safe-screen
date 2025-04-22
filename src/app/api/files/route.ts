@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 
 import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 const secret = process.env.NEXTAUTH_SECRET;
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
@@ -21,15 +22,24 @@ export async function GET(request: NextRequest) {
   const pageParam = searchParams.get("page");
   const limitParam = searchParams.get("limit");
   const sortParam = searchParams.get("sort");
+  const queryParam = searchParams.get("query");
 
   const page = pageParam ? parseInt(pageParam) : 1;
   const limit = limitParam ? parseInt(limitParam) : 10;
   const skip = (page - 1) * limit;
   const sort = sortParam === "asc" ? "asc" : "desc";
+  const query = queryParam ?? "";
+
+  const where: Prisma.FileWhereInput = {
+    userId,
+    ...(query && {
+      OR: [{ name: { contains: query, mode: "insensitive" } }],
+    }),
+  };
 
   const [files, totalCount] = await Promise.all([
     prisma.file.findMany({
-      where: { userId },
+      where,
       skip,
       take: limit,
       orderBy: { createdAt: sort },
@@ -65,50 +75,66 @@ export async function POST(request: NextRequest) {
   const userId = token.sub;
 
   try {
-    try {
-      await fs.access(UPLOAD_DIR);
-    } catch {
-      await fs.mkdir(UPLOAD_DIR, { recursive: true });
-    }
+    await fs.mkdir(UPLOAD_DIR, { recursive: true });
+
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
     if (!file) {
-      return NextResponse.json({
-        error: "No file provided",
-        status: 400,
-      });
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    const fileExtension = path.extname(file.name);
-    const fileName = `${uuidv4()}${fileExtension}`;
+    const originalName = file.name;
+    const ext = path.extname(originalName);
+    const base = originalName.slice(0, -ext.length);
+
+    const existingFiles = await prisma.file.findMany({
+      where: {
+        userId,
+        name: { startsWith: base, endsWith: ext },
+      },
+      select: { name: true },
+    });
+
+    const numbers: number[] = [];
+    for (const { name } of existingFiles) {
+      if (name === `${base}${ext}`) {
+        numbers.push(0);
+        continue;
+      }
+
+      const suffix = name.slice(base.length, -ext.length);
+      const suffixMatch = suffix.match(/^ \((\d+)\)$/);
+      if (suffixMatch) numbers.push(parseInt(suffixMatch[1], 10));
+    }
+
+    const newNumber = numbers.length > 0 ? Math.max(...numbers) + 1 : 0;
+    const newName =
+      newNumber === 0 ? `${base}${ext}` : `${base} (${newNumber})${ext}`;
+
+    const fileName = `${uuidv4()}${path.extname(file.name)}`;
     const filePath = path.join(UPLOAD_DIR, fileName);
-
     const fileBuffer = Buffer.from(await file.arrayBuffer());
-    fs.writeFile(filePath, fileBuffer);
-
-    const relativePath = `/uploads/${fileName}`;
+    await fs.writeFile(filePath, fileBuffer);
 
     await prisma.file.create({
       data: {
-        name: file.name,
+        name: newName,
         mimetype: file.type,
-        path: relativePath,
+        path: `/uploads/${fileName}`,
         userId,
         size: file.size,
       },
     });
 
     return NextResponse.json(
-      {
-        message: "File has been successfully processed.",
-      },
+      { message: "File processed successfully" },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error uploading file:", error);
+    console.error("Upload error:", error);
     return NextResponse.json(
-      { error: "Failed to upload file" },
+      { error: "Failed to process file" },
       { status: 500 }
     );
   }

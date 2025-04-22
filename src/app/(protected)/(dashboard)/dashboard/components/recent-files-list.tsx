@@ -2,7 +2,7 @@ import { z } from "zod";
 import { cookies } from "next/headers";
 import { FileUp, AlertCircle, LucideIcon } from "lucide-react";
 
-import { RecentFileListItem } from "./recent-file-list-item";
+import { RecentFilesListItem } from "./recent-files-list-item";
 
 import { API_ENDPOINTS, HTTP_METHOD } from "@/constants";
 import { apiClient } from "@/lib/api/client";
@@ -39,7 +39,7 @@ const FileListContainer = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-async function RecentFileList() {
+async function RecentFilesList() {
   const cookieHeader = (await cookies()).toString();
 
   const response = await apiClient({
@@ -82,13 +82,13 @@ async function RecentFileList() {
 
   return (
     <FileListContainer>
-      <div className="p-4">
+      <div className="py-4">
         {files.map((file) => (
-          <RecentFileListItem key={file.id} file={file} />
+          <RecentFilesListItem key={file.id} file={file} />
         ))}
       </div>
     </FileListContainer>
   );
 }
 
-export { RecentFileList };
+export { RecentFilesList };

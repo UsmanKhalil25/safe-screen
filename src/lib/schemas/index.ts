@@ -6,3 +6,6 @@ export * from "./auth/register/register.type";
 
 export * from "./file/file.schema";
 export * from "./file/file.type";
+
+export * from "./pagination/pagination.schema";
+export * from "./pagination/pagination.type";
