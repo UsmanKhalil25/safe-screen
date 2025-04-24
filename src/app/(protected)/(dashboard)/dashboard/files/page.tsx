@@ -33,7 +33,7 @@ export default async function FilesPage(props: {
         </div>
       </div>
 
-      <div className="rounded-md border">
+      <div className="rounded-md border h-full">
         <Suspense key={query + currentPage} fallback={<FilesSkeleton />}>
           <FilesList query={query} currentPage={currentPage} />
         </Suspense>

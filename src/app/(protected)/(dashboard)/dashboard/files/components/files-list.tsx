@@ -1,7 +1,13 @@
 import { z } from "zod";
 import { cookies } from "next/headers";
 import { formatDistanceToNow } from "date-fns";
-import { FileIcon, FileTextIcon, ImageIcon, VideoIcon } from "lucide-react";
+import {
+  FileIcon,
+  FileTextIcon,
+  ImageIcon,
+  VideoIcon,
+  FileSearch,
+} from "lucide-react";
 import {
   Table,
   TableBody,
@@ -11,19 +17,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-
 import { API_ENDPOINTS, HTTP_METHOD } from "@/constants";
 import { apiClient } from "@/lib/api/client";
 import { fileSchema, paginationSchema } from "@/lib/schemas";
+import { FilesPagination } from "./files-pagination";
 
 interface FilesListProps {
   query: string;
@@ -82,18 +79,17 @@ export async function FilesList({ query, currentPage }: FilesListProps) {
   const files = parsed.data.data;
   const pagination = parsed.data.pagination;
 
-  const { totalItems, totalPages, itemsPerPage } = pagination;
-
   if (files.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 text-center">
+      <div className="h-full flex flex-col items-center justify-center p-8 text-center gap-2">
+        <FileSearch className="w-10 h-10 text-muted-foreground" />
         <p className="text-muted-foreground">No files found</p>
       </div>
     );
   }
 
   return (
-    <>
+    <div className="h-full flex flex-col justify-between">
       <Table>
         <TableHeader>
           <TableRow>
@@ -125,94 +121,7 @@ export async function FilesList({ query, currentPage }: FilesListProps) {
           ))}
         </TableBody>
       </Table>
-
-      <div className="flex items-center justify-between px-4 py-4 border-t">
-        <div className="text-sm text-muted-foreground">
-          Showing <strong>{files.length}</strong> of{" "}
-          <strong>{totalItems}</strong> files
-        </div>
-
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href={
-                  currentPage > 1
-                    ? `/files?page=${currentPage - 1}${
-                        query ? `&query=${query}` : ""
-                      }`
-                    : "#"
-                }
-                aria-disabled={currentPage <= 1}
-                className={
-                  currentPage <= 1 ? "pointer-events-none opacity-50" : ""
-                }
-              />
-            </PaginationItem>
-
-            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-              const pageNumber = i + 1;
-              // Show first page, last page, current page, and pages around current
-              const shouldShowPage =
-                pageNumber === 1 ||
-                pageNumber === totalPages ||
-                (pageNumber >= currentPage - 1 &&
-                  pageNumber <= currentPage + 1);
-
-              if (!shouldShowPage && pageNumber === 2) {
-                return (
-                  <PaginationItem key="ellipsis-start">
-                    <PaginationEllipsis />
-                  </PaginationItem>
-                );
-              }
-
-              if (!shouldShowPage && pageNumber === totalPages - 1) {
-                return (
-                  <PaginationItem key="ellipsis-end">
-                    <PaginationEllipsis />
-                  </PaginationItem>
-                );
-              }
-
-              if (shouldShowPage) {
-                return (
-                  <PaginationItem key={pageNumber}>
-                    <PaginationLink
-                      href={`/files?page=${pageNumber}${
-                        query ? `&query=${query}` : ""
-                      }`}
-                      isActive={pageNumber === currentPage}
-                    >
-                      {pageNumber}
-                    </PaginationLink>
-                  </PaginationItem>
-                );
-              }
-
-              return null;
-            })}
-
-            <PaginationItem>
-              <PaginationNext
-                href={
-                  currentPage < totalPages
-                    ? `/files?page=${currentPage + 1}${
-                        query ? `&query=${query}` : ""
-                      }`
-                    : "#"
-                }
-                aria-disabled={currentPage >= totalPages}
-                className={
-                  currentPage >= totalPages
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
-    </>
+      <FilesPagination pagination={pagination} filesLength={files.length} />
+    </div>
   );
 }

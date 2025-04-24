@@ -10,7 +10,7 @@ import {
 
 export function FilesSkeleton() {
   return (
-    <>
+    <div className="h-full flex flex-col justify-between">
       <Table>
         <TableHeader>
           <TableRow>
@@ -49,8 +49,10 @@ export function FilesSkeleton() {
 
       <div className="flex items-center justify-between px-4 py-4 border-t">
         <Skeleton className="h-5 w-40" />
-        <Skeleton className="h-8 w-64" />
+        <div className="w-full mx-auto flex justify-center">
+          <Skeleton className="h-8 w-64" />
+        </div>
       </div>
-    </>
+    </div>
   );
 }
