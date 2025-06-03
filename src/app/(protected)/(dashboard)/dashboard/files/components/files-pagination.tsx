@@ -10,7 +10,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { PaginationSchema } from "@/lib/schemas";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 import { useCallback } from "react";
 
 interface FilesPaginationProps {
@@ -19,11 +19,13 @@ interface FilesPaginationProps {
 }
 
 function FilesPagination({ filesLength, pagination }: FilesPaginationProps) {
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentPage = pagination.currentPage;
   const totalPages = Math.ceil(pagination.totalItems / pagination.itemsPerPage);
+  
+
+  console.log("Fileslength: ", filesLength);
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -38,7 +40,7 @@ function FilesPagination({ filesLength, pagination }: FilesPaginationProps) {
     const links = [];
     const maxVisiblePages = 5;
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
     if (endPage - startPage + 1 < maxVisiblePages) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1);

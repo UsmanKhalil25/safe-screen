@@ -22,7 +22,7 @@ export function FilesSkeleton() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Array.from({ length: 10 }).map((_, index) => (
+          {Array.from({ length: 8 }).map((_, index) => (
             <TableRow key={index}>
               <TableCell>
                 <div className="flex items-center gap-2">

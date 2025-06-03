@@ -75,7 +75,6 @@ export async function FilesList({ query, currentPage }: FilesListProps) {
   if (!parsed.success) {
     return null;
   }
-  console.log(parsed);
   const files = parsed.data.data;
   const pagination = parsed.data.pagination;
 
