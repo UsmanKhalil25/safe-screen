@@ -33,6 +33,14 @@
 		"enabled": true,
 	},
 	"upload_source_maps": true,
+	"d1_databases": [
+		{
+			"binding": "safe_screen",
+			"database_name": "safe-screen",
+			"database_id": "b5846b0c-41ef-4200-9d39-d40dd37d8219",
+			"migrations_dir": "src/db/migrations",
+		},
+	],
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
