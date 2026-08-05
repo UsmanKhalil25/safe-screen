@@ -1,0 +1,7 @@
+.next
+.open-next
+.wrangler
+node_modules
+pnpm-lock.yaml
+cloudflare-env.d.ts
+next-env.d.ts
