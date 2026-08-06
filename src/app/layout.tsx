@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 
 import { Toaster } from "@/components/ui/toast";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/providers/theme-provider";
 
@@ -47,8 +48,10 @@ export default function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					{children}
-					<Toaster />
+					<TooltipProvider>
+						{children}
+						<Toaster />
+					</TooltipProvider>
 				</ThemeProvider>
 			</body>
 		</html>

@@ -58,5 +58,7 @@
 	 * Note: Use secrets to store sensitive data.
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
-	// "vars": {  "MY_VARIABLE": "production_value" }
+	"vars": {
+		"BETTER_AUTH_URL": "https://safe-screen.usmankhalil8011.workers.dev",
+	},
 }

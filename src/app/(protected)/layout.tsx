@@ -1,18 +1,31 @@
-import { SignOutButton } from "./components/sign-out-button";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-export default async function ProtectedLayout({
+import { AppSidebar } from "./components/app-sidebar";
+import { SiteHeader } from "./components/site-header";
+
+export default function ProtectedLayout({
 	children,
-}: Readonly<{
+}: {
 	children: React.ReactNode;
-}>) {
+}) {
 	return (
-		<div className="flex min-h-svh flex-col">
-			<header className="flex items-center justify-between border-b px-6 py-4">
-				<SignOutButton />
-			</header>
-			<main className="flex flex-1 items-center justify-center p-6">
-				{children}
-			</main>
-		</div>
+		<SidebarProvider
+			style={
+				{
+					"--sidebar-width": "calc(var(--spacing) * 72)",
+					"--header-height": "calc(var(--spacing) * 12)",
+				} as React.CSSProperties
+			}
+		>
+			<AppSidebar variant="inset" />
+			<SidebarInset>
+				<SiteHeader />
+				<div className="flex flex-1 flex-col">
+					<div className="@container/main flex flex-1 flex-col gap-2">
+						{children}
+					</div>
+				</div>
+			</SidebarInset>
+		</SidebarProvider>
 	);
 }

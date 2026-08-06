@@ -5,7 +5,7 @@ import { getAuth } from "@/lib/auth";
 const authRoutes = ["/sign-in", "/sign-up"];
 const protectedRoutes = ["/"];
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
 	const path = request.nextUrl.pathname;
 
 	const auth = await getAuth();
