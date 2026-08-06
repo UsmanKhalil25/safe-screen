@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
@@ -30,6 +31,8 @@ import {
 	InputGroupButton,
 	InputGroupInput,
 } from "@/components/ui/input-group";
+import { toast } from "@/components/ui/toast";
+import { authClient } from "@/lib/auth-client";
 
 export const signUpSchema = z
 	.object({
@@ -48,6 +51,7 @@ export type SignUpFormValues = z.infer<typeof signUpSchema>;
 export function SignUpForm() {
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+	const router = useRouter();
 
 	const form = useForm<SignUpFormValues>({
 		resolver: zodResolver(signUpSchema),
@@ -59,8 +63,19 @@ export function SignUpForm() {
 		},
 	});
 
-	function onSubmit(data: SignUpFormValues) {
-		console.log(data);
+	async function onSubmit(data: SignUpFormValues) {
+		await authClient.signUp.email(
+			{ name: data.name, email: data.email, password: data.password },
+			{
+				onSuccess: () => {
+					router.push("/");
+					router.refresh();
+				},
+				onError: (ctx) => {
+					toast.add({ title: ctx.error.message, type: "error" });
+				},
+			},
+		);
 	}
 
 	return (

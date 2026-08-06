@@ -25,14 +25,18 @@ function createAuth(db: AuthDatabase, secret?: string, baseURL?: string) {
 		},
 		baseURL,
 		database: drizzleAdapter(db, drizzleAdapterOptions),
+		emailAndPassword: {
+			enabled: true,
+		},
 		secret,
 	});
 }
 
 // Runtime: the D1 binding is available after OpenNext initializes the
-// Cloudflare context.
-export function getAuth() {
-	const { env } = getCloudflareContext();
+// Cloudflare context. Async mode is required so this can be called from
+// routes/layouts that Next.js may attempt to statically prerender.
+export async function getAuth() {
+	const { env } = await getCloudflareContext({ async: true });
 
 	return createAuth(getDb(), env.BETTER_AUTH_SECRET, env.BETTER_AUTH_URL);
 }
