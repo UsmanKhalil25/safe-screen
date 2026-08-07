@@ -61,4 +61,10 @@
 	"vars": {
 		"BETTER_AUTH_URL": "https://safe-screen.usmankhalil8011.workers.dev",
 	},
+	"r2_buckets": [
+		{
+			"bucket_name": "safe-screen-files",
+			"binding": "safe_screen_files",
+		},
+	],
 }

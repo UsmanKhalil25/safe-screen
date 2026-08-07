@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export const ENTITY_ID_PREFIXES = {
 	account: "acc",
+	file: "file",
 	session: "ses",
 	user: "usr",
 	verification: "ver",
