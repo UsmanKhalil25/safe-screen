@@ -5,7 +5,7 @@ import { drizzle } from "drizzle-orm/d1";
 
 import { getDb } from "@/db";
 import * as schema from "@/db/schema";
-import { createBetterAuthId } from "@/lib/entity-ids";
+import { createEntityId } from "@/lib/entity-ids";
 
 type AuthDatabase = ReturnType<typeof getDb>;
 
@@ -20,7 +20,7 @@ function createAuth(db: AuthDatabase, secret?: string, baseURL?: string) {
 	return betterAuth({
 		advanced: {
 			database: {
-				generateId: createBetterAuthId,
+				generateId: ({ model }) => createEntityId(model),
 			},
 		},
 		baseURL,

@@ -1,33 +1,22 @@
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
+import { persisted } from "./persisted";
+
 export const users = sqliteTable("users", {
-	id: text().primaryKey(),
+	...persisted("user"),
 	name: text().notNull(),
 	email: text().notNull().unique(),
 	emailVerified: integer({ mode: "boolean" }).default(false).notNull(),
 	image: text(),
-	createdAt: integer({ mode: "timestamp_ms" })
-		.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-		.notNull(),
-	updatedAt: integer({ mode: "timestamp_ms" })
-		.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-		.$onUpdate(() => new Date())
-		.notNull(),
 });
 
 export const sessions = sqliteTable(
 	"sessions",
 	{
-		id: text().primaryKey(),
+		...persisted("session"),
 		expiresAt: integer({ mode: "timestamp_ms" }).notNull(),
 		token: text().notNull().unique(),
-		createdAt: integer({ mode: "timestamp_ms" })
-			.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-			.notNull(),
-		updatedAt: integer({ mode: "timestamp_ms" })
-			.$onUpdate(() => new Date())
-			.notNull(),
 		ipAddress: text(),
 		userAgent: text(),
 		userId: text()
@@ -40,7 +29,7 @@ export const sessions = sqliteTable(
 export const accounts = sqliteTable(
 	"accounts",
 	{
-		id: text().primaryKey(),
+		...persisted("account"),
 		accountId: text().notNull(),
 		providerId: text().notNull(),
 		userId: text()
@@ -53,12 +42,6 @@ export const accounts = sqliteTable(
 		refreshTokenExpiresAt: integer({ mode: "timestamp_ms" }),
 		scope: text(),
 		password: text(),
-		createdAt: integer({ mode: "timestamp_ms" })
-			.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-			.notNull(),
-		updatedAt: integer({ mode: "timestamp_ms" })
-			.$onUpdate(() => new Date())
-			.notNull(),
 	},
 	(table) => [index("accounts_user_id_idx").on(table.userId)],
 );
@@ -66,17 +49,10 @@ export const accounts = sqliteTable(
 export const verifications = sqliteTable(
 	"verifications",
 	{
-		id: text().primaryKey(),
+		...persisted("verification"),
 		identifier: text().notNull(),
 		value: text().notNull(),
 		expiresAt: integer({ mode: "timestamp_ms" }).notNull(),
-		createdAt: integer({ mode: "timestamp_ms" })
-			.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-			.notNull(),
-		updatedAt: integer({ mode: "timestamp_ms" })
-			.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-			.$onUpdate(() => new Date())
-			.notNull(),
 	},
 	(table) => [index("verifications_identifier_idx").on(table.identifier)],
 );
