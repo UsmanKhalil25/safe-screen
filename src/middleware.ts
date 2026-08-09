@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "@/lib/auth";
 
 const authRoutes = ["/sign-in", "/sign-up"];
-const protectedRoutes = ["/"];
+const protectedRoutes = ["/", "/files"];
 
 export async function middleware(request: NextRequest) {
 	const path = request.nextUrl.pathname;
@@ -23,5 +23,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ["/", "/sign-in", "/sign-up"],
+	matcher: ["/", "/files", "/sign-in", "/sign-up"],
 };

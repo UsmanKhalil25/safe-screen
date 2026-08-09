@@ -28,7 +28,7 @@ function getLocalD1DB() {
 export default defineConfig({
 	casing: "snake_case",
 	dialect: "sqlite",
-	schema: "./src/db/schema.ts",
+	schema: "./src/db/schema/*",
 	dbCredentials: {
 		url: getLocalD1DB(),
 	},

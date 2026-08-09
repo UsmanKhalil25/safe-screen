@@ -2,6 +2,7 @@
 
 import {
 	BarChart3,
+	Files,
 	Folder,
 	HelpCircle,
 	LayoutDashboard,
@@ -27,12 +28,17 @@ import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
 import { NavUser } from "./nav-user";
 
-const data = {
+export const navItems = {
 	navMain: [
 		{
 			title: "Dashboard",
 			url: "/",
 			icon: LayoutDashboard,
+		},
+		{
+			title: "Files",
+			url: "/files",
+			icon: Files,
 		},
 		{
 			title: "Lifecycle",
@@ -86,8 +92,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				</SidebarMenu>
 			</SidebarHeader>
 			<SidebarContent>
-				<NavMain items={data.navMain} />
-				<NavSecondary items={data.navSecondary} className="mt-auto" />
+				<NavMain items={navItems.navMain} />
+				<NavSecondary items={navItems.navSecondary} className="mt-auto" />
 			</SidebarContent>
 			<SidebarFooter>
 				<NavUser />
