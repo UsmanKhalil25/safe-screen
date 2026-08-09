@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/table";
 
 import { statusOptions } from "./columns";
-import { features, type DataTableFeatures } from "./data-table-features";
+import { features, type DataTableFeatures } from "../data-table-features";
 
 interface DataTableProps<TData extends RowData> {
 	columns: ColumnDef<DataTableFeatures, TData>[];

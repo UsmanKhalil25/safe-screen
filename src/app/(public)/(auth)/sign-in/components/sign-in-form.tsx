@@ -58,7 +58,7 @@ export function SignInForm() {
 			{ email: data.email, password: data.password },
 			{
 				onSuccess: () => {
-					router.push("/");
+					router.push("/dashboard");
 					router.refresh();
 				},
 				onError: (ctx) => {

@@ -4,11 +4,6 @@ import { createColumnHelper } from "@tanstack/react-table";
 import {
 	ArrowUpDown,
 	Download,
-	File,
-	FileArchive,
-	FileImage,
-	FileSpreadsheet,
-	FileText,
 	MoreHorizontal,
 	Pencil,
 	Trash2,
@@ -25,23 +20,12 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import type { FileRecord } from "./data";
-import type { DataTableFeatures } from "./data-table-features";
-import { formatDate, formatFileSize } from "./format";
+import type { FileRecord } from "../data";
+import type { DataTableFeatures } from "../data-table-features";
+import { formatDate, formatFileSize } from "../format";
+import { FileTypeIcon } from "./file-type-icon";
 
 const columnHelper = createColumnHelper<DataTableFeatures, FileRecord>();
-
-function FileTypeIcon({ mimeType }: { mimeType: string }) {
-	if (mimeType.startsWith("image/"))
-		return <FileImage className="size-4 text-muted-foreground" />;
-	if (mimeType === "application/pdf")
-		return <FileText className="size-4 text-muted-foreground" />;
-	if (mimeType.includes("spreadsheet") || mimeType === "text/csv")
-		return <FileSpreadsheet className="size-4 text-muted-foreground" />;
-	if (mimeType.includes("zip") || mimeType.includes("compressed"))
-		return <FileArchive className="size-4 text-muted-foreground" />;
-	return <File className="size-4 text-muted-foreground" />;
-}
 
 const statusVariant: Record<FileRecord["status"], "secondary" | "outline"> = {
 	active: "secondary",

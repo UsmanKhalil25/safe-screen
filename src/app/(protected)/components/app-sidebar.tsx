@@ -7,6 +7,7 @@ import {
 	HelpCircle,
 	LayoutDashboard,
 	ListChecks,
+	Plug,
 	Settings,
 	Sparkles,
 	Users,
@@ -32,13 +33,18 @@ export const navItems = {
 	navMain: [
 		{
 			title: "Dashboard",
-			url: "/",
+			url: "/dashboard",
 			icon: LayoutDashboard,
 		},
 		{
 			title: "Files",
 			url: "/files",
 			icon: Files,
+		},
+		{
+			title: "Integrations",
+			url: "/integrations",
+			icon: Plug,
 		},
 		{
 			title: "Lifecycle",
@@ -82,7 +88,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<SidebarMenuButton
-							render={<Link href="/" />}
+							render={<Link href="/dashboard" />}
 							className="data-[slot=sidebar-menu-button]:p-1.5!"
 						>
 							<Sparkles className="size-5!" />

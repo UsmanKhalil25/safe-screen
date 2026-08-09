@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "@/lib/auth";
 
 const authRoutes = ["/sign-in", "/sign-up"];
-const protectedRoutes = ["/", "/files"];
+const protectedRoutes = ["/dashboard", "/files", "/integrations"];
 
 export async function middleware(request: NextRequest) {
 	const path = request.nextUrl.pathname;
@@ -16,12 +16,12 @@ export async function middleware(request: NextRequest) {
 	}
 
 	if (authRoutes.includes(path) && session) {
-		return NextResponse.redirect(new URL("/", request.url));
+		return NextResponse.redirect(new URL("/dashboard", request.url));
 	}
 
 	return NextResponse.next();
 }
 
 export const config = {
-	matcher: ["/", "/files", "/sign-in", "/sign-up"],
+	matcher: ["/dashboard", "/files", "/sign-in", "/sign-up"],
 };

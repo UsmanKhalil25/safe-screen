@@ -6,7 +6,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 
-export default function Home() {
+export default function Dashboard() {
 	return (
 		<Card className="max-w-sm">
 			<CardHeader>

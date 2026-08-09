@@ -14,7 +14,7 @@ export default function NotFoundPage() {
 						Looks like you&#39;ve ventured into the unknown digital realm.
 					</p>
 				</div>
-				<Link href="/" prefetch={false} className={buttonVariants()}>
+				<Link href="/dashboard" prefetch={false} className={buttonVariants()}>
 					Return to website
 				</Link>
 			</div>

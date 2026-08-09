@@ -68,7 +68,7 @@ export function SignUpForm() {
 			{ name: data.name, email: data.email, password: data.password },
 			{
 				onSuccess: () => {
-					router.push("/");
+					router.push("/dashboard");
 					router.refresh();
 				},
 				onError: (ctx) => {
