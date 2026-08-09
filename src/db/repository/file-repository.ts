@@ -8,8 +8,6 @@ import type {
 	ListFilesQuery,
 } from "@/lib/contracts/files";
 
-export const PAGE_SIZE = 10;
-
 const sortableColumns = {
 	fileName: files.fileName,
 	status: files.status,
@@ -75,8 +73,8 @@ export class DrizzleFileRepository implements FileRepository {
 				.from(files)
 				.where(where)
 				.orderBy(orderBy)
-				.limit(PAGE_SIZE)
-				.offset(input.page * PAGE_SIZE),
+				.limit(input.pageSize)
+				.offset(input.page * input.pageSize),
 			this.db.select({ total: count() }).from(files).where(where),
 		]);
 

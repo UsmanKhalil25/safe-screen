@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import "./globals.css";
 
@@ -48,10 +49,12 @@ export default function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					<TooltipProvider>
-						{children}
-						<Toaster />
-					</TooltipProvider>
+					<NuqsAdapter>
+						<TooltipProvider>
+							{children}
+							<Toaster />
+						</TooltipProvider>
+					</NuqsAdapter>
 				</ThemeProvider>
 			</body>
 		</html>

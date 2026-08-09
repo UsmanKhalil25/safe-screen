@@ -29,8 +29,20 @@ export const fileSchema = createSelectSchema(files).pick({
 
 export type FileRecord = z.infer<typeof fileSchema>;
 
+export const PAGE_SIZE_OPTIONS = [5, 10, 15, 20, 25] as const;
+export const DEFAULT_PAGE_SIZE: (typeof PAGE_SIZE_OPTIONS)[number] = 10;
+
 export const listFilesQuerySchema = z.object({
 	page: z.coerce.number().int().min(0).default(0),
+	pageSize: z.coerce
+		.number()
+		.int()
+		.refine(
+			(value): value is (typeof PAGE_SIZE_OPTIONS)[number] =>
+				(PAGE_SIZE_OPTIONS as readonly number[]).includes(value),
+			{ message: "Invalid page size" },
+		)
+		.default(DEFAULT_PAGE_SIZE),
 	status: z.array(z.enum(["active", "deleted"])).optional(),
 	search: z.string().trim().min(1).optional(),
 	sortBy: z

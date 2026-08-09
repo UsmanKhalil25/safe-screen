@@ -60,6 +60,7 @@
 	 */
 	"vars": {
 		"BETTER_AUTH_URL": "https://safe-screen.usmankhalil8011.workers.dev",
+		"APP_URL": "https://safe-screen.usmankhalil8011.workers.dev",
 	},
 	"r2_buckets": [
 		{

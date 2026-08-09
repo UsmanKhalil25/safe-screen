@@ -15,10 +15,10 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
+import type { FileRecord } from "@/lib/contracts/files";
+import { formatFileSize } from "@/lib/utils";
 
 import { FileTypeIcon } from "./file-type-icon";
-import type { FileRecord } from "../data";
-import { formatFileSize } from "../format";
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024;
 

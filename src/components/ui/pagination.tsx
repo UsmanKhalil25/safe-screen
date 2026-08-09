@@ -1,3 +1,4 @@
+import type { VariantProps } from "class-variance-authority";
 import {
 	ChevronLeftIcon,
 	ChevronRightIcon,
@@ -5,7 +6,7 @@ import {
 } from "lucide-react";
 import * as React from "react";
 
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
@@ -39,9 +40,17 @@ function PaginationItem({ ...props }: React.ComponentProps<"li">) {
 
 type PaginationLinkProps = {
 	isActive?: boolean;
-} & Pick<React.ComponentProps<typeof Button>, "size"> &
+} & Pick<VariantProps<typeof buttonVariants>, "size"> &
 	React.ComponentProps<"a">;
 
+// A plain <a> styled with buttonVariants, deliberately not routed through
+// the Button component's `render` prop — that combo has a real SSR/hydration
+// data-slot mismatch (base-ui's render-prop merge disagrees with itself
+// between the server render and the client hydration pass), which only
+// matters here because PaginationLink can now be rendered from a Server
+// Component. A link never needs Button's native-button/keyboard-affordance
+// machinery anyway, so this sidesteps the bug at the root instead of
+// working around it at each call site.
 function PaginationLink({
 	className,
 	isActive,
@@ -49,19 +58,15 @@ function PaginationLink({
 	...props
 }: PaginationLinkProps) {
 	return (
-		<Button
-			variant={isActive ? "outline" : "ghost"}
-			size={size}
-			className={cn(className)}
-			nativeButton={false}
-			render={
-				<a
-					aria-current={isActive ? "page" : undefined}
-					data-slot="pagination-link"
-					data-active={isActive}
-					{...props}
-				/>
-			}
+		<a
+			aria-current={isActive ? "page" : undefined}
+			data-slot="pagination-link"
+			data-active={isActive}
+			className={cn(
+				buttonVariants({ variant: isActive ? "outline" : "ghost", size }),
+				className,
+			)}
+			{...props}
 		/>
 	);
 }

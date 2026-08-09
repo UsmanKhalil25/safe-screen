@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
 	const searchParams = request.nextUrl.searchParams;
 	const parsed = listFilesQuerySchema.safeParse({
 		page: searchParams.get("page") ?? undefined,
+		pageSize: searchParams.get("pageSize") ?? undefined,
 		status: searchParams.getAll("status"),
 		search: searchParams.get("search") ?? undefined,
 		sortBy: searchParams.get("sortBy") ?? undefined,
