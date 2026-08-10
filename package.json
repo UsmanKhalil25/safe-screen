@@ -19,6 +19,8 @@
 		"db:studio": "drizzle-kit studio --config=drizzle.studio.config.ts"
 	},
 	"dependencies": {
+		"@aws-sdk/client-s3": "^3.1106.0",
+		"@aws-sdk/s3-request-presigner": "^3.1106.0",
 		"@base-ui/react": "^1.6.0",
 		"@hookform/resolvers": "^5.7.1",
 		"@opennextjs/cloudflare": "^1.19.9",

@@ -5,9 +5,9 @@ import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
-import { pluralize } from "@/lib/utils";
+import { pluralize, triggerDownload } from "@/lib/utils";
 
-import { deleteFilesAction } from "../../actions";
+import { deleteFilesAction, downloadFileAction } from "../../actions";
 import { DeleteConfirmDialog } from "../delete-confirm-dialog";
 import { useSelection } from "./selection-provider";
 
@@ -21,11 +21,18 @@ export function SelectionActionsBar() {
 		return null;
 	}
 
-	function handleDownload() {
-		toast.add({
-			title: `Downloading ${count} ${pluralize(count, "file")}…`,
-			type: "info",
-		});
+	async function handleDownload() {
+		try {
+			const results = await Promise.all(
+				selectedIds.map((id) => downloadFileAction(id)),
+			);
+			results.forEach(({ url }) => triggerDownload(url));
+		} catch {
+			toast.add({
+				title: `Failed to download ${pluralize(count, "file")}`,
+				type: "error",
+			});
+		}
 	}
 
 	async function handleDeleteConfirm() {

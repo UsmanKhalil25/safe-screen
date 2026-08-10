@@ -31,3 +31,12 @@ export function pluralize(
 ): string {
 	return count === 1 ? singular : plural;
 }
+
+export function triggerDownload(url: string) {
+	const anchor = document.createElement("a");
+	anchor.href = url;
+	anchor.rel = "noopener";
+	document.body.appendChild(anchor);
+	anchor.click();
+	anchor.remove();
+}

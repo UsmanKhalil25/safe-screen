@@ -39,6 +39,7 @@
 			"database_name": "safe-screen",
 			"database_id": "b5846b0c-41ef-4200-9d39-d40dd37d8219",
 			"migrations_dir": "src/db/migrations",
+			"remote": true,
 		},
 	],
 	/**
@@ -66,6 +67,7 @@
 		{
 			"bucket_name": "safe-screen-files",
 			"binding": "safe_screen_files",
+			"remote": true,
 		},
 	],
 }

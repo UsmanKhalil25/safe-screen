@@ -17,12 +17,13 @@ export function FilePreviewPanel({ file }: { file: FileRecord }) {
 	return (
 		<>
 			<div className="flex flex-col items-center gap-3 bg-muted/40 px-6 py-16">
-				<MimeIcon mimeType={file.mimeType} className="size-12 text-muted-foreground" />
+				<MimeIcon
+					mimeType={file.mimeType}
+					className="size-12 text-muted-foreground"
+				/>
 				<div className="text-center">
 					<p className="text-sm font-medium">{file.fileName}</p>
-					<p className="text-xs text-muted-foreground">
-						Preview coming soon
-					</p>
+					<p className="text-xs text-muted-foreground">Preview coming soon</p>
 				</div>
 			</div>
 			<div className="grid grid-cols-2 border-t sm:grid-cols-4">

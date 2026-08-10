@@ -17,9 +17,13 @@ import { MimeIcon } from "@/components/ui/mime-icon";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { toast } from "@/components/ui/toast";
 import type { FileRecord } from "@/lib/contracts/files";
-import { formatDate, formatFileSize } from "@/lib/utils";
+import { formatDate, formatFileSize, triggerDownload } from "@/lib/utils";
 
-import { deleteFilesAction, renameFileAction } from "../../actions";
+import {
+	deleteFilesAction,
+	downloadFileAction,
+	renameFileAction,
+} from "../../actions";
 import { DeleteConfirmDialog } from "../delete-confirm-dialog";
 import { RenameDialog } from "../rename-dialog";
 import { RowCheckbox } from "../selection/selection-provider";
@@ -35,8 +39,13 @@ export function FileTableRow({ file }: { file: FileRecord }) {
 	const [deleteOpen, setDeleteOpen] = React.useState(false);
 	const [isDeleting, setIsDeleting] = React.useState(false);
 
-	function handleDownload() {
-		toast.add({ title: `Downloading ${file.fileName}…`, type: "info" });
+	async function handleDownload() {
+		try {
+			const { url } = await downloadFileAction(file.id);
+			triggerDownload(url);
+		} catch {
+			toast.add({ title: "Failed to download file", type: "error" });
+		}
 	}
 
 	async function handleRenameConfirm(nextFileName: string) {

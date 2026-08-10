@@ -22,6 +22,12 @@ export type ListFilesResult = {
 	total: number;
 };
 
+export type FileForDownload = {
+	fileName: string;
+	mimeType: string;
+	storageKey: string;
+};
+
 export interface FileRepository {
 	create(input: CreateFileInput): Promise<FileRecord>;
 	list(input: ListFilesInput): Promise<ListFilesResult>;
@@ -31,6 +37,7 @@ export interface FileRepository {
 		ownerId: string,
 		fileName: string,
 	): Promise<FileRecord | null>;
+	findForDownload(id: string, ownerId: string): Promise<FileForDownload | null>;
 }
 
 export class DrizzleFileRepository implements FileRepository {
@@ -114,6 +121,22 @@ export class DrizzleFileRepository implements FileRepository {
 				status: files.status,
 				createdAt: files.createdAt,
 			});
+
+		return record ?? null;
+	}
+
+	async findForDownload(
+		id: string,
+		ownerId: string,
+	): Promise<FileForDownload | null> {
+		const [record] = await this.db
+			.select({
+				fileName: files.fileName,
+				mimeType: files.mimeType,
+				storageKey: files.storageKey,
+			})
+			.from(files)
+			.where(and(eq(files.id, id), eq(files.ownerId, ownerId)));
 
 		return record ?? null;
 	}
