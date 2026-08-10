@@ -18,15 +18,12 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/toast";
 import type { FileRecord } from "@/lib/contracts/files";
-import { formatFileSize } from "@/lib/utils";
+import { formatFileSize, pluralize } from "@/lib/utils";
 
 import { FileTypeIcon } from "./file-type-icon";
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024;
 
-// Simulated upload speed: duration scales with file size (so a 20 MB file
-// visibly takes longer than a 20 KB one) within bounds that keep tiny files
-// from flashing past instantly and large ones from feeling slow to demo.
 const SIMULATED_BYTES_PER_MS = 20_000;
 const MIN_UPLOAD_MS = 500;
 const MAX_UPLOAD_MS = 3000;
@@ -58,9 +55,6 @@ export function UploadDialog() {
 
 	const hasUploading = entries.some((entry) => entry.status === "uploading");
 
-	// One shared clock drives every in-flight upload's progress, rather than
-	// a timer per file — keeps the row updates in lockstep and means bigger
-	// files simply take longer instead of ticking at an unrelated fixed rate.
 	React.useEffect(() => {
 		if (!hasUploading) return;
 
@@ -109,7 +103,6 @@ export function UploadDialog() {
 		event.preventDefault();
 		setIsDragging(false);
 
-		// Dropping on the transparent input also fires its change handler.
 		if (event.target instanceof HTMLInputElement) {
 			return;
 		}
@@ -154,7 +147,7 @@ export function UploadDialog() {
 
 		if (completedFiles.length > 0) {
 			toast.add({
-				title: `${completedFiles.length} file${completedFiles.length === 1 ? "" : "s"} uploaded`,
+				title: `${completedFiles.length} ${pluralize(completedFiles.length, "file")} uploaded`,
 				type: "success",
 			});
 			router.refresh();

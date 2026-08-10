@@ -52,8 +52,8 @@ export class DrizzleFileRepository implements FileRepository {
 	async list(input: ListFilesInput): Promise<ListFilesResult> {
 		const conditions = [eq(files.ownerId, input.ownerId)];
 
-		if (input.status && input.status.length > 0) {
-			conditions.push(inArray(files.status, input.status));
+		if (input.status) {
+			conditions.push(eq(files.status, input.status));
 		}
 
 		if (input.search) {

@@ -21,7 +21,7 @@ import { deleteFilesAction, renameFileAction } from "../../actions";
 import { DeleteConfirmDialog } from "../delete-confirm-dialog";
 import { FileTypeIcon } from "../file-type-icon";
 import { RenameDialog } from "../rename-dialog";
-import { RowCheckbox } from "../selection";
+import { RowCheckbox } from "../selection/selection-provider";
 
 const statusVariant: Record<FileRecord["status"], "secondary" | "outline"> = {
 	active: "secondary",

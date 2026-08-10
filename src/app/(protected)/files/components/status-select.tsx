@@ -24,12 +24,8 @@ export function StatusSelect() {
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 
-	const current = searchParams.getAll("status");
-	const value =
-		current.length === 1 &&
-		(current[0] === "active" || current[0] === "deleted")
-			? current[0]
-			: "all";
+	const current = searchParams.get("status");
+	const value = current === "active" || current === "deleted" ? current : "all";
 
 	return (
 		<Select

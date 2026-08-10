@@ -1,14 +1,8 @@
 "use client";
 
-import { Download, Trash2, X } from "lucide-react";
 import * as React from "react";
 
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { toast } from "@/components/ui/toast";
-
-import { deleteFilesAction } from "../actions";
-import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 
 type SelectionContextValue = {
 	selectedIds: string[];
@@ -59,8 +53,6 @@ export function SelectionProvider({ children }: { children: React.ReactNode }) {
 				});
 			},
 			clear: () => setSelected(new Set()),
-			// A new page of rows invalidates any prior selection — only ids
-			// still visible on the current page are worth keeping selected.
 			setPageIds: (ids) => {
 				setPageIdsState(ids);
 				setSelected((current) => {
@@ -85,8 +77,6 @@ export function PageIdsRegistrar({ ids }: { ids: string[] }) {
 
 	React.useEffect(() => {
 		setPageIds(key ? key.split(",") : []);
-		// setPageIds is stable for the lifetime of the provider; re-running
-		// this effect should only be driven by the page's ids changing.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [key]);
 
@@ -120,76 +110,5 @@ export function RowCheckbox({ fileId }: { fileId: string }) {
 			onCheckedChange={() => toggle(fileId)}
 			aria-label="Select file"
 		/>
-	);
-}
-
-export function SelectionActionsBar() {
-	const { selectedIds, clear } = useSelection();
-	const [confirmOpen, setConfirmOpen] = React.useState(false);
-	const [isDeleting, setIsDeleting] = React.useState(false);
-	const count = selectedIds.length;
-
-	if (count === 0) {
-		return null;
-	}
-
-	function handleDownload() {
-		toast.add({
-			title: `Downloading ${count} file${count === 1 ? "" : "s"}…`,
-			type: "info",
-		});
-	}
-
-	async function handleDeleteConfirm() {
-		setIsDeleting(true);
-		try {
-			await deleteFilesAction(selectedIds);
-			toast.add({
-				title: `${count} file${count === 1 ? "" : "s"} deleted`,
-				type: "success",
-			});
-			clear();
-			setConfirmOpen(false);
-		} catch {
-			toast.add({ title: "Failed to delete files", type: "error" });
-		} finally {
-			setIsDeleting(false);
-		}
-	}
-
-	return (
-		<div className="mb-4 flex items-center gap-2 rounded-md border bg-muted/50 px-3 py-2">
-			<span className="text-sm font-medium">{count} selected</span>
-			<div className="ml-auto flex items-center gap-2">
-				<Button variant="outline" size="sm" onClick={handleDownload}>
-					<Download />
-					Download
-				</Button>
-				<Button
-					variant="destructive"
-					size="sm"
-					onClick={() => setConfirmOpen(true)}
-				>
-					<Trash2 />
-					Delete
-				</Button>
-				<Button
-					variant="ghost"
-					size="icon-sm"
-					aria-label="Clear selection"
-					onClick={clear}
-				>
-					<X />
-				</Button>
-			</div>
-
-			<DeleteConfirmDialog
-				open={confirmOpen}
-				onOpenChange={setConfirmOpen}
-				count={count}
-				onConfirm={handleDeleteConfirm}
-				isDeleting={isDeleting}
-			/>
-		</div>
 	);
 }

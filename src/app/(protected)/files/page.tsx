@@ -1,10 +1,8 @@
 import { FileTable } from "./components/file-table/file-table";
 import type { FilesQuery } from "./components/file-table/file-table-impl";
 import { SearchInput } from "./components/search-input";
-import {
-	SelectionActionsBar,
-	SelectionProvider,
-} from "./components/selection";
+import { SelectionActionsBar } from "./components/selection/selection-actions-bar";
+import { SelectionProvider } from "./components/selection/selection-provider";
 import { SortSelect } from "./components/sort-select";
 import { StatusSelect } from "./components/status-select";
 import { UploadDialog } from "./components/upload-dialog";

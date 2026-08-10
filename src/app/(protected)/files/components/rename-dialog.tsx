@@ -31,8 +31,6 @@ export function RenameDialog({
 	const [value, setValue] = React.useState(fileName);
 	const [prevOpen, setPrevOpen] = React.useState(open);
 
-	// Reset the input to the current file name each time the dialog opens,
-	// without the extra render an effect-based sync would cause.
 	if (open !== prevOpen) {
 		setPrevOpen(open);
 		if (open) {

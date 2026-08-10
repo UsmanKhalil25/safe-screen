@@ -23,3 +23,11 @@ export function formatDate(date: Date): string {
 		year: "numeric",
 	}).format(date);
 }
+
+export function pluralize(
+	count: number,
+	singular: string,
+	plural: string = `${singular}s`,
+): string {
+	return count === 1 ? singular : plural;
+}

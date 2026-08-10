@@ -43,7 +43,7 @@ export const listFilesQuerySchema = z.object({
 			{ message: "Invalid page size" },
 		)
 		.default(DEFAULT_PAGE_SIZE),
-	status: z.array(z.enum(["active", "deleted"])).optional(),
+	status: z.enum(["active", "deleted"]).optional(),
 	search: z.string().trim().min(1).optional(),
 	sortBy: z
 		.enum(["fileName", "status", "sizeBytes", "createdAt"])

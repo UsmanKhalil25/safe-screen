@@ -1,4 +1,4 @@
-import { Inbox, SearchX } from "lucide-react";
+import { AlertTriangle, Inbox, SearchX } from "lucide-react";
 import { headers } from "next/headers";
 import { cache } from "react";
 
@@ -9,6 +9,13 @@ import {
 	EmptyMedia,
 	EmptyTitle,
 } from "@/components/ui/empty";
+import {
+	ErrorState as ErrorStateBase,
+	ErrorStateDescription,
+	ErrorStateHeader,
+	ErrorStateMedia,
+	ErrorStateTitle,
+} from "@/components/ui/error-state";
 import {
 	Pagination,
 	PaginationContent,
@@ -26,10 +33,14 @@ import {
 import { getDb } from "@/db";
 import { DrizzleFileRepository } from "@/db/repository/file-repository";
 import { getAuth } from "@/lib/auth";
-import { DEFAULT_PAGE_SIZE, listFilesQuerySchema } from "@/lib/contracts/files";
+import {
+	DEFAULT_PAGE_SIZE,
+	FileRecord,
+	listFilesQuerySchema,
+} from "@/lib/contracts/files";
 
 import { PageSizeSelect } from "../page-size-select";
-import { PageIdsRegistrar } from "../selection";
+import { PageIdsRegistrar } from "../selection/selection-provider";
 import { FileTableRow } from "./file-table-row";
 
 export type FilesQuery = {
@@ -64,7 +75,7 @@ export const getFiles = cache(async (query: FilesQuery) => {
 	const parsed = listFilesQuerySchema.parse({
 		page: query.page,
 		pageSize: query.pageSize,
-		status: query.status ? [query.status] : undefined,
+		status: query.status,
 		search: query.search,
 		sortBy: query.sortBy,
 		sortDir: query.sortDir,
@@ -75,103 +86,145 @@ export const getFiles = cache(async (query: FilesQuery) => {
 	return repository.list({ ownerId: session.user.id, ...parsed });
 });
 
+function EmptyState({ hasFilters }: { hasFilters: boolean }) {
+	return (
+		<Empty className="border-none">
+			<EmptyHeader>
+				<EmptyMedia variant="icon" className="size-12">
+					{hasFilters ? (
+						<SearchX className="size-6" />
+					) : (
+						<Inbox className="size-6" />
+					)}
+				</EmptyMedia>
+				<EmptyTitle>
+					{hasFilters ? "No matching files" : "No files yet"}
+				</EmptyTitle>
+				<EmptyDescription>
+					{hasFilters
+						? "Try adjusting your search or status filter."
+						: "Files you upload will show up here."}
+				</EmptyDescription>
+			</EmptyHeader>
+		</Empty>
+	);
+}
+
+function ErrorState() {
+	return (
+		<ErrorStateBase className="border-none">
+			<ErrorStateHeader>
+				<ErrorStateMedia variant="icon" className="size-12">
+					<AlertTriangle className="size-6" />
+				</ErrorStateMedia>
+				<ErrorStateTitle>Failed to load files</ErrorStateTitle>
+				<ErrorStateDescription>
+					We ran into a problem loading your files. Please try again.
+				</ErrorStateDescription>
+			</ErrorStateHeader>
+		</ErrorStateBase>
+	);
+}
+
 export async function FileTableImpl({ query }: { query: FilesQuery }) {
-	const { files, total } = await getFiles(query);
+	let files: FileRecord[] = [];
+	let total = 0;
+	let hasError = false;
+
+	try {
+		({ files, total } = await getFiles(query));
+	} catch {
+		hasError = true;
+	}
+
 	const page = Number(query.page ?? 0);
 	const pageSize = Number(query.pageSize) || DEFAULT_PAGE_SIZE;
 	const pageCount = Math.max(1, Math.ceil(total / pageSize));
+	const hasFilters = Boolean(query.search) || Boolean(query.status);
+	const showError = hasError;
+	const showEmpty = !hasError && files.length === 0;
 
-	if (files.length === 0) {
-		const hasFilters = Boolean(query.search) || Boolean(query.status);
+	function renderTable() {
+		return (
+			<>
+				<TableBody>
+					<PageIdsRegistrar ids={files.map((file) => file.id)} />
+					{files.map((file) => (
+						<FileTableRow key={file.id} file={file} />
+					))}
+				</TableBody>
+				<TableFooter>
+					<TableRow className="hover:bg-transparent">
+						<TableCell colSpan={6} className="py-3">
+							<div className="flex items-center justify-between gap-2">
+								<PageSizeSelect />
+								{pageCount > 1 && (
+									<Pagination className="mx-0 w-auto justify-end">
+										<PaginationContent>
+											<PaginationItem>
+												<PaginationPrevious
+													href={buildPageHref(query, Math.max(0, page - 1))}
+													aria-disabled={page <= 0}
+													className={
+														page <= 0
+															? "pointer-events-none opacity-50"
+															: undefined
+													}
+												/>
+											</PaginationItem>
+											{Array.from({ length: pageCount }, (_, index) => (
+												<PaginationItem key={index}>
+													<PaginationLink
+														href={buildPageHref(query, index)}
+														isActive={index === page}
+													>
+														{index + 1}
+													</PaginationLink>
+												</PaginationItem>
+											))}
+											<PaginationItem>
+												<PaginationNext
+													href={buildPageHref(
+														query,
+														Math.min(pageCount - 1, page + 1),
+													)}
+													aria-disabled={page >= pageCount - 1}
+													className={
+														page >= pageCount - 1
+															? "pointer-events-none opacity-50"
+															: undefined
+													}
+												/>
+											</PaginationItem>
+										</PaginationContent>
+									</Pagination>
+								)}
+							</div>
+						</TableCell>
+					</TableRow>
+				</TableFooter>
+			</>
+		);
+	}
 
+	function getComponent() {
+		if (showError) return <ErrorState />;
+		if (showEmpty) return <EmptyState hasFilters={hasFilters} />;
+		return renderTable();
+	}
+
+	if (showError || showEmpty) {
 		return (
 			<TableBody>
 				<PageIdsRegistrar ids={[]} />
 				<TableRow>
 					<TableCell colSpan={6} className="h-64 p-0">
-						<Empty className="border-none">
-							<EmptyHeader>
-								<EmptyMedia variant="icon" className="size-12">
-									{hasFilters ? (
-										<SearchX className="size-6" />
-									) : (
-										<Inbox className="size-6" />
-									)}
-								</EmptyMedia>
-								<EmptyTitle>
-									{hasFilters ? "No matching files" : "No files yet"}
-								</EmptyTitle>
-								<EmptyDescription>
-									{hasFilters
-										? "Try adjusting your search or status filter."
-										: "Files you upload will show up here."}
-								</EmptyDescription>
-							</EmptyHeader>
-						</Empty>
+						{getComponent()}
 					</TableCell>
 				</TableRow>
 			</TableBody>
 		);
 	}
 
-	return (
-		<>
-			<TableBody>
-				<PageIdsRegistrar ids={files.map((file) => file.id)} />
-				{files.map((file) => (
-					<FileTableRow key={file.id} file={file} />
-				))}
-			</TableBody>
-			<TableFooter>
-				<TableRow className="hover:bg-transparent">
-					<TableCell colSpan={6} className="py-3">
-						<div className="flex items-center justify-between gap-2">
-							<PageSizeSelect />
-							{pageCount > 1 && (
-								<Pagination className="mx-0 w-auto justify-end">
-									<PaginationContent>
-										<PaginationItem>
-											<PaginationPrevious
-												href={buildPageHref(query, Math.max(0, page - 1))}
-												aria-disabled={page <= 0}
-												className={
-													page <= 0
-														? "pointer-events-none opacity-50"
-														: undefined
-												}
-											/>
-										</PaginationItem>
-										{Array.from({ length: pageCount }, (_, index) => (
-											<PaginationItem key={index}>
-												<PaginationLink
-													href={buildPageHref(query, index)}
-													isActive={index === page}
-												>
-													{index + 1}
-												</PaginationLink>
-											</PaginationItem>
-										))}
-										<PaginationItem>
-											<PaginationNext
-												href={buildPageHref(
-													query,
-													Math.min(pageCount - 1, page + 1),
-												)}
-												aria-disabled={page >= pageCount - 1}
-												className={
-													page >= pageCount - 1
-														? "pointer-events-none opacity-50"
-														: undefined
-												}
-											/>
-										</PaginationItem>
-									</PaginationContent>
-								</Pagination>
-							)}
-						</div>
-					</TableCell>
-				</TableRow>
-			</TableFooter>
-		</>
-	);
+	return getComponent();
 }

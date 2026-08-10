@@ -10,6 +10,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
+import { pluralize } from "@/lib/utils";
 
 export function DeleteConfirmDialog({
 	open,
@@ -29,11 +30,11 @@ export function DeleteConfirmDialog({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						Delete {count} file{count === 1 ? "" : "s"}?
+						Delete {count} {pluralize(count, "file")}?
 					</DialogTitle>
 					<DialogDescription>
-						This will remove the selected file{count === 1 ? "" : "s"} from
-						your files.
+						This will remove the selected {pluralize(count, "file")} from your
+						files.
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter>
