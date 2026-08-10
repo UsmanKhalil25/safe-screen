@@ -12,6 +12,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { MimeIcon } from "@/components/ui/mime-icon";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { toast } from "@/components/ui/toast";
 import type { FileRecord } from "@/lib/contracts/files";
@@ -19,7 +20,6 @@ import { formatDate, formatFileSize } from "@/lib/utils";
 
 import { deleteFilesAction, renameFileAction } from "../../actions";
 import { DeleteConfirmDialog } from "../delete-confirm-dialog";
-import { FileTypeIcon } from "../file-type-icon";
 import { RenameDialog } from "../rename-dialog";
 import { RowCheckbox } from "../selection/selection-provider";
 
@@ -71,7 +71,7 @@ export function FileTableRow({ file }: { file: FileRecord }) {
 			</TableCell>
 			<TableCell>
 				<div className="flex min-w-0 items-center gap-2">
-					<FileTypeIcon mimeType={file.mimeType} />
+					<MimeIcon mimeType={file.mimeType} />
 					<span className="truncate font-medium">{file.fileName}</span>
 				</div>
 			</TableCell>

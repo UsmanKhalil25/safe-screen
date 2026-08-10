@@ -15,12 +15,11 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
+import { MimeIcon } from "@/components/ui/mime-icon";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/toast";
 import type { FileRecord } from "@/lib/contracts/files";
 import { formatFileSize, pluralize } from "@/lib/utils";
-
-import { FileTypeIcon } from "./file-type-icon";
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024;
 
@@ -243,7 +242,7 @@ export function UploadDialog() {
 											key={entry.id}
 											className="grid grid-cols-[1rem_1fr_auto_auto_1.5rem] items-center gap-2.5 px-3 py-2"
 										>
-											<FileTypeIcon mimeType={entry.file.type} />
+											<MimeIcon mimeType={entry.file.type} />
 											<span className="min-w-0 truncate text-sm font-medium">
 												{entry.file.name}
 											</span>
