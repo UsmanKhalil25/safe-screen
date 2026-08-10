@@ -12,9 +12,9 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 
-const statusOptions = ["all", "active", "deleted"] as const;
+import { FILE_STATUS_FILTER_OPTIONS } from "../constants";
 
-const statusItems = statusOptions.map((option) => ({
+const statusItems = FILE_STATUS_FILTER_OPTIONS.map((option) => ({
 	value: option,
 	label: option[0].toUpperCase() + option.slice(1),
 }));
@@ -45,7 +45,7 @@ export function StatusSelect() {
 			<SelectContent>
 				<SelectGroup>
 					<SelectLabel>Status</SelectLabel>
-					{statusOptions.map((option) => (
+					{FILE_STATUS_FILTER_OPTIONS.map((option) => (
 						<SelectItem key={option} value={option} className="capitalize">
 							{option}
 						</SelectItem>

@@ -6,6 +6,7 @@ import { SelectionProvider } from "./components/selection/selection-provider";
 import { SortSelect } from "./components/sort-select";
 import { StatusSelect } from "./components/status-select";
 import { UploadDialog } from "./components/upload-dialog";
+import { FILES_PAGE_DESCRIPTION, FILES_PAGE_TITLE } from "./constants";
 
 export default async function FilesPage({
 	searchParams,
@@ -18,9 +19,9 @@ export default async function FilesPage({
 		<div className="flex flex-col gap-4 px-4 py-4 lg:px-6">
 			<div className="flex items-center justify-between">
 				<div>
-					<h2 className="text-lg font-semibold">Files</h2>
+					<h2 className="text-lg font-semibold">{FILES_PAGE_TITLE}</h2>
 					<p className="text-sm text-muted-foreground">
-						Documents uploaded for candidate screening.
+						{FILES_PAGE_DESCRIPTION}
 					</p>
 				</div>
 				<UploadDialog />

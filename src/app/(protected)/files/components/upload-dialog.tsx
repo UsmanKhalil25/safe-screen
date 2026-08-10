@@ -21,7 +21,7 @@ import { toast } from "@/components/ui/toast";
 import type { FileRecord } from "@/lib/contracts/files";
 import { formatFileSize, pluralize } from "@/lib/utils";
 
-const MAX_FILE_SIZE = 25 * 1024 * 1024;
+import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB } from "../constants";
 
 const SIMULATED_BYTES_PER_MS = 20_000;
 const MIN_UPLOAD_MS = 500;
@@ -83,7 +83,7 @@ export function UploadDialog() {
 			id: crypto.randomUUID(),
 			file,
 			progress: 0,
-			status: file.size > MAX_FILE_SIZE ? "error" : "uploading",
+			status: file.size > MAX_FILE_SIZE_BYTES ? "error" : "uploading",
 			startedAt: now,
 			durationMs: estimateUploadDuration(file.size),
 		}));
@@ -219,7 +219,7 @@ export function UploadDialog() {
 									Drag files here, or click to browse
 								</p>
 								<p className="text-xs text-muted-foreground">
-									Up to 25 MB per file
+									Up to {MAX_FILE_SIZE_MB} MB per file
 								</p>
 							</div>
 						) : (

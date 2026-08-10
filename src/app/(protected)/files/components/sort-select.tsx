@@ -11,26 +11,23 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { SORT_DIRECTION_LABELS, SORT_DIRECTION_OPTIONS } from "@/lib/constants";
 import { SORT_COLUMNS } from "@/lib/contracts/files";
 
 const sortByValues = SORT_COLUMNS.map((column) => column.value);
-const sortDirValues = ["asc", "desc"] as const;
 
-const sortDirLabels: Record<(typeof sortDirValues)[number], string> = {
-	asc: "Ascending",
-	desc: "Descending",
-};
-
-const sortDirItems = sortDirValues.map((value) => ({
+const sortDirItems = SORT_DIRECTION_OPTIONS.map((value) => ({
 	value,
-	label: sortDirLabels[value],
+	label: SORT_DIRECTION_LABELS[value],
 }));
 
 export function SortSelect() {
 	const [{ sortBy, sortDir }, setQuery] = useQueryStates(
 		{
 			sortBy: parseAsStringEnum(sortByValues).withDefault("createdAt"),
-			sortDir: parseAsStringEnum([...sortDirValues]).withDefault("desc"),
+			sortDir: parseAsStringEnum([...SORT_DIRECTION_OPTIONS]).withDefault(
+				"desc",
+			),
 			page: parseAsInteger,
 		},
 		{ shallow: false, clearOnDefault: true },
@@ -69,7 +66,7 @@ export function SortSelect() {
 				onValueChange={(next: string | null) => {
 					if (!next) return;
 					setQuery({
-						sortDir: next as (typeof sortDirValues)[number],
+						sortDir: next as (typeof SORT_DIRECTION_OPTIONS)[number],
 						page: null,
 					});
 				}}
@@ -80,9 +77,9 @@ export function SortSelect() {
 				<SelectContent>
 					<SelectGroup>
 						<SelectLabel>Order</SelectLabel>
-						{sortDirValues.map((dir) => (
+						{SORT_DIRECTION_OPTIONS.map((dir) => (
 							<SelectItem key={dir} value={dir}>
-								{sortDirLabels[dir]}
+								{SORT_DIRECTION_LABELS[dir]}
 							</SelectItem>
 						))}
 					</SelectGroup>
