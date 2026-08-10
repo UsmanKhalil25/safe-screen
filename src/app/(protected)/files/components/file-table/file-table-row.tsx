@@ -21,7 +21,7 @@ import { formatDate, formatFileSize, triggerDownload } from "@/lib/utils";
 
 import {
 	deleteFilesAction,
-	downloadFileAction,
+	downloadFilesAction,
 	renameFileAction,
 } from "../../actions";
 import { DeleteConfirmDialog } from "../delete-confirm-dialog";
@@ -41,8 +41,12 @@ export function FileTableRow({ file }: { file: FileRecord }) {
 
 	async function handleDownload() {
 		try {
-			const { url } = await downloadFileAction(file.id);
-			triggerDownload(url);
+			const { results, notFound } = await downloadFilesAction([file.id]);
+			if (notFound.length > 0) {
+				toast.add({ title: "File no longer available", type: "error" });
+				return;
+			}
+			triggerDownload(results[0].url);
 		} catch {
 			toast.add({ title: "Failed to download file", type: "error" });
 		}

@@ -23,6 +23,7 @@ export type ListFilesResult = {
 };
 
 export type FileForDownload = {
+	id: string;
 	fileName: string;
 	mimeType: string;
 	storageKey: string;
@@ -37,7 +38,10 @@ export interface FileRepository {
 		ownerId: string,
 		fileName: string,
 	): Promise<FileRecord | null>;
-	findForDownload(id: string, ownerId: string): Promise<FileForDownload | null>;
+	findManyForDownload(
+		ids: string[],
+		ownerId: string,
+	): Promise<FileForDownload[]>;
 }
 
 export class DrizzleFileRepository implements FileRepository {
@@ -125,19 +129,18 @@ export class DrizzleFileRepository implements FileRepository {
 		return record ?? null;
 	}
 
-	async findForDownload(
-		id: string,
+	async findManyForDownload(
+		ids: string[],
 		ownerId: string,
-	): Promise<FileForDownload | null> {
-		const [record] = await this.db
+	): Promise<FileForDownload[]> {
+		return this.db
 			.select({
+				id: files.id,
 				fileName: files.fileName,
 				mimeType: files.mimeType,
 				storageKey: files.storageKey,
 			})
 			.from(files)
-			.where(and(eq(files.id, id), eq(files.ownerId, ownerId)));
-
-		return record ?? null;
+			.where(and(eq(files.ownerId, ownerId), inArray(files.id, ids)));
 	}
 }

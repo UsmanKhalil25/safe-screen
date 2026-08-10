@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { pluralize, triggerDownload } from "@/lib/utils";
 
-import { deleteFilesAction, downloadFileAction } from "../../actions";
+import { deleteFilesAction, downloadFilesAction } from "../../actions";
 import { DeleteConfirmDialog } from "../delete-confirm-dialog";
 import { useSelection } from "./selection-provider";
 
@@ -23,10 +23,29 @@ export function SelectionActionsBar() {
 
 	async function handleDownload() {
 		try {
-			const results = await Promise.all(
-				selectedIds.map((id) => downloadFileAction(id)),
-			);
-			results.forEach(({ url }) => triggerDownload(url));
+			const { results, notFound } = await downloadFilesAction(selectedIds);
+
+			if (results.length > 1) {
+				toast.add({
+					title:
+						"If your browser blocks some downloads, allow multiple downloads when prompted",
+					type: "info",
+				});
+			}
+
+			for (const [index, { url }] of results.entries()) {
+				if (index > 0) {
+					await new Promise((resolve) => setTimeout(resolve, 400));
+				}
+				triggerDownload(url);
+			}
+
+			if (notFound.length > 0) {
+				toast.add({
+					title: `${notFound.length} ${pluralize(notFound.length, "file")} no longer available`,
+					type: "error",
+				});
+			}
 		} catch {
 			toast.add({
 				title: `Failed to download ${pluralize(count, "file")}`,

@@ -63,24 +63,29 @@ export async function uploadFileAction(file: File) {
 	return record;
 }
 
-export async function downloadFileAction(id: string) {
+export async function downloadFilesAction(ids: string[]) {
 	const session = await requireSession();
 
 	const repository = new DrizzleFileRepository(getDb());
-	const file = await repository.findForDownload(id, session.user.id);
-
-	if (!file) {
-		throw new Error("File not found");
-	}
+	const files = await repository.findManyForDownload(ids, session.user.id);
+	const foundIds = new Set(files.map((file) => file.id));
 
 	const storage = getFileStorage();
-	const url = await storage.getSignedUrl(file.storageKey, {
-		fileName: file.fileName,
-		disposition: "attachment",
-		expiresInSeconds: 60,
-	});
+	const results = await Promise.all(
+		files.map(async (file) => ({
+			id: file.id,
+			url: await storage.getSignedUrl(file.storageKey, {
+				fileName: file.fileName,
+				disposition: "attachment",
+				expiresInSeconds: 60,
+			}),
+		})),
+	);
 
-	return { url };
+	return {
+		results,
+		notFound: ids.filter((id) => !foundIds.has(id)),
+	};
 }
 
 export async function deleteFilesAction(ids: string[]) {
