@@ -45,6 +45,7 @@ import { formatDate, formatFileSize } from "@/lib/utils";
 
 import { FileTypeIcon } from "./file-type-icon";
 import { PageSizeSelect } from "./page-size-select";
+import { PageIdsRegistrar, RowCheckbox } from "./selection";
 
 export type FilesQuery = {
 	page?: string;
@@ -117,8 +118,9 @@ export async function FileTableImpl({ query }: { query: FilesQuery }) {
 
 		return (
 			<TableBody>
+				<PageIdsRegistrar ids={[]} />
 				<TableRow>
-					<TableCell colSpan={5} className="h-64 p-0">
+					<TableCell colSpan={6} className="h-64 p-0">
 						<Empty className="border-none">
 							<EmptyHeader>
 								<EmptyMedia variant="icon" className="size-12">
@@ -147,8 +149,12 @@ export async function FileTableImpl({ query }: { query: FilesQuery }) {
 	return (
 		<>
 			<TableBody>
+				<PageIdsRegistrar ids={files.map((file) => file.id)} />
 				{files.map((file) => (
 					<TableRow key={file.id}>
+						<TableCell>
+							<RowCheckbox fileId={file.id} />
+						</TableCell>
 						<TableCell>
 							<div className="flex min-w-0 items-center gap-2">
 								<FileTypeIcon mimeType={file.mimeType} />
@@ -199,7 +205,7 @@ export async function FileTableImpl({ query }: { query: FilesQuery }) {
 			</TableBody>
 			<TableFooter>
 				<TableRow className="hover:bg-transparent">
-					<TableCell colSpan={5} className="py-3">
+					<TableCell colSpan={6} className="py-3">
 						<div className="flex items-center justify-between gap-2">
 							<PageSizeSelect />
 							{pageCount > 1 && (

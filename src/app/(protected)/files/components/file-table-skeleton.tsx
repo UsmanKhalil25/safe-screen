@@ -16,6 +16,9 @@ export function FileTableSkeleton() {
 				{Array.from({ length: SKELETON_ROW_COUNT }).map((_, index) => (
 					<TableRow key={index}>
 						<TableCell>
+							<Skeleton className="size-4 rounded-[4px]" />
+						</TableCell>
+						<TableCell>
 							<Skeleton className="h-4 w-54" />
 						</TableCell>
 						<TableCell>
@@ -35,7 +38,7 @@ export function FileTableSkeleton() {
 			</TableBody>
 			<TableFooter>
 				<TableRow className="hover:bg-transparent">
-					<TableCell colSpan={5} className="py-3">
+					<TableCell colSpan={6} className="py-3">
 						<div className="flex items-center justify-between gap-2">
 							<Skeleton className="h-8 w-32 rounded-lg" />
 							<PaginationSkeleton />

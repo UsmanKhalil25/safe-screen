@@ -5,6 +5,7 @@ import { SORT_COLUMNS } from "@/lib/contracts/files";
 
 import { FileTableImpl, type FilesQuery } from "./file-table-impl";
 import { FileTableSkeleton } from "./file-table-skeleton";
+import { SelectAllCheckbox } from "./selection";
 
 // table-fixed reads these from the header row and locks every column to
 // them, so neither the skeleton nor real data ever shifts the layout again.
@@ -25,6 +26,9 @@ export function FileTable({ query }: { query: FilesQuery }) {
 			<Table className="table-fixed">
 				<TableHeader>
 					<TableRow>
+						<TableHead className="w-10">
+							<SelectAllCheckbox />
+						</TableHead>
 						{SORT_COLUMNS.map((column) => (
 							<TableHead
 								key={column.value}

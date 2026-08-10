@@ -1,6 +1,8 @@
+import { BulkActionsBar } from "./components/bulk-actions-bar";
 import { FileTable } from "./components/file-table";
 import type { FilesQuery } from "./components/file-table-impl";
 import { SearchInput } from "./components/search-input";
+import { SelectionProvider } from "./components/selection";
 import { SortControls } from "./components/sort-controls";
 import { StatusFilter } from "./components/status-filter";
 import { UploadFilesButton } from "./components/upload-files-button";
@@ -24,15 +26,19 @@ export default async function FilesPage({
 				<UploadFilesButton />
 			</div>
 
-			<div className="w-full">
-				<div className="flex items-center gap-2 py-4">
-					<SearchInput />
-					<StatusFilter />
-					<SortControls />
-				</div>
+			<SelectionProvider>
+				<div className="w-full">
+					<div className="flex items-center gap-2 py-4">
+						<SearchInput />
+						<StatusFilter />
+						<SortControls />
+					</div>
 
-				<FileTable query={query} />
-			</div>
+					<BulkActionsBar />
+
+					<FileTable query={query} />
+				</div>
+			</SelectionProvider>
 		</div>
 	);
 }
