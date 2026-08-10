@@ -4,21 +4,16 @@ import { Download, Trash2, X } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
 import { toast } from "@/components/ui/toast";
 
+import { deleteFilesAction } from "../actions";
+import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 import { useSelection } from "./selection";
 
 export function BulkActionsBar() {
 	const { selectedIds, clear } = useSelection();
 	const [confirmOpen, setConfirmOpen] = React.useState(false);
+	const [isDeleting, setIsDeleting] = React.useState(false);
 	const count = selectedIds.length;
 
 	if (count === 0) {
@@ -32,13 +27,21 @@ export function BulkActionsBar() {
 		});
 	}
 
-	function handleDeleteConfirm() {
-		toast.add({
-			title: `${count} file${count === 1 ? "" : "s"} deleted`,
-			type: "success",
-		});
-		clear();
-		setConfirmOpen(false);
+	async function handleDeleteConfirm() {
+		setIsDeleting(true);
+		try {
+			await deleteFilesAction(selectedIds);
+			toast.add({
+				title: `${count} file${count === 1 ? "" : "s"} deleted`,
+				type: "success",
+			});
+			clear();
+			setConfirmOpen(false);
+		} catch {
+			toast.add({ title: "Failed to delete files", type: "error" });
+		} finally {
+			setIsDeleting(false);
+		}
 	}
 
 	return (
@@ -67,27 +70,13 @@ export function BulkActionsBar() {
 				</Button>
 			</div>
 
-			<Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-				<DialogContent>
-					<DialogHeader>
-						<DialogTitle>
-							Delete {count} file{count === 1 ? "" : "s"}?
-						</DialogTitle>
-						<DialogDescription>
-							This will remove the selected file
-							{count === 1 ? "" : "s"} from your files.
-						</DialogDescription>
-					</DialogHeader>
-					<DialogFooter>
-						<Button variant="outline" onClick={() => setConfirmOpen(false)}>
-							Cancel
-						</Button>
-						<Button variant="destructive" onClick={handleDeleteConfirm}>
-							Delete
-						</Button>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
+			<DeleteConfirmDialog
+				open={confirmOpen}
+				onOpenChange={setConfirmOpen}
+				count={count}
+				onConfirm={handleDeleteConfirm}
+				isDeleting={isDeleting}
+			/>
 		</div>
 	);
 }

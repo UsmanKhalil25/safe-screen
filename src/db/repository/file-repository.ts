@@ -25,6 +25,12 @@ export type ListFilesResult = {
 export interface FileRepository {
 	create(input: CreateFileInput): Promise<FileRecord>;
 	list(input: ListFilesInput): Promise<ListFilesResult>;
+	softDelete(ids: string[], ownerId: string): Promise<number>;
+	rename(
+		id: string,
+		ownerId: string,
+		fileName: string,
+	): Promise<FileRecord | null>;
 }
 
 export class DrizzleFileRepository implements FileRepository {
@@ -79,5 +85,36 @@ export class DrizzleFileRepository implements FileRepository {
 		]);
 
 		return { files: rows, total };
+	}
+
+	async softDelete(ids: string[], ownerId: string): Promise<number> {
+		const rows = await this.db
+			.update(files)
+			.set({ status: "deleted" })
+			.where(and(eq(files.ownerId, ownerId), inArray(files.id, ids)))
+			.returning({ id: files.id });
+
+		return rows.length;
+	}
+
+	async rename(
+		id: string,
+		ownerId: string,
+		fileName: string,
+	): Promise<FileRecord | null> {
+		const [record] = await this.db
+			.update(files)
+			.set({ fileName })
+			.where(and(eq(files.id, id), eq(files.ownerId, ownerId)))
+			.returning({
+				id: files.id,
+				fileName: files.fileName,
+				mimeType: files.mimeType,
+				sizeBytes: files.sizeBytes,
+				status: files.status,
+				createdAt: files.createdAt,
+			});
+
+		return record ?? null;
 	}
 }

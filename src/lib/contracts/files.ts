@@ -59,3 +59,15 @@ export const SORT_COLUMNS = [
 	{ value: "sizeBytes", label: "Size" },
 	{ value: "createdAt", label: "Uploaded" },
 ] as const satisfies { value: ListFilesQuery["sortBy"]; label: string }[];
+
+export const deleteFilesSchema = z.object({
+	ids: z.array(z.string().min(1)).min(1),
+});
+
+export type DeleteFilesInput = z.infer<typeof deleteFilesSchema>;
+
+export const updateFileSchema = z.object({
+	fileName: z.string().trim().min(1),
+});
+
+export type UpdateFileInput = z.infer<typeof updateFileSchema>;

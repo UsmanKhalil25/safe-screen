@@ -1,24 +1,8 @@
-import { getCloudflareContext } from "@opennextjs/cloudflare";
-import {
-	Download,
-	Inbox,
-	MoreHorizontal,
-	Pencil,
-	SearchX,
-	Trash2,
-} from "lucide-react";
+import { Inbox, SearchX } from "lucide-react";
 import { headers } from "next/headers";
 import { cache } from "react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
 	Empty,
 	EmptyDescription,
@@ -40,9 +24,17 @@ import {
 	TableFooter,
 	TableRow,
 } from "@/components/ui/table";
-import { DEFAULT_PAGE_SIZE, type FileRecord } from "@/lib/contracts/files";
+import { getDb } from "@/db";
+import { DrizzleFileRepository } from "@/db/repository/file-repository";
+import { getAuth } from "@/lib/auth";
+import {
+	DEFAULT_PAGE_SIZE,
+	listFilesQuerySchema,
+	type FileRecord,
+} from "@/lib/contracts/files";
 import { formatDate, formatFileSize } from "@/lib/utils";
 
+import { FileRowActions } from "./file-row-actions";
 import { FileTypeIcon } from "./file-type-icon";
 import { PageSizeSelect } from "./page-size-select";
 import { PageIdsRegistrar, RowCheckbox } from "./selection";
@@ -74,37 +66,25 @@ function buildPageHref(query: FilesQuery, page: number) {
 }
 
 export const getFiles = cache(async (query: FilesQuery) => {
-	const { env } = await getCloudflareContext({ async: true });
-	const incomingHeaders = await headers();
+	const auth = await getAuth();
+	const session = await auth.api.getSession({ headers: await headers() });
 
-	const url = new URL("/api/files", env.APP_URL);
-	if (query.page) url.searchParams.set("page", query.page);
-	if (query.pageSize) url.searchParams.set("pageSize", query.pageSize);
-	if (query.status) url.searchParams.set("status", query.status);
-	if (query.search) url.searchParams.set("search", query.search);
-	if (query.sortBy) url.searchParams.set("sortBy", query.sortBy);
-	if (query.sortDir) url.searchParams.set("sortDir", query.sortDir);
-
-	const response = await fetch(url, {
-		headers: { cookie: incomingHeaders.get("cookie") ?? "" },
-	});
-
-	if (!response.ok) {
-		throw new Error(`Failed to load files (${response.status})`);
+	if (!session) {
+		throw new Error("Unauthorized");
 	}
 
-	const result = await response.json<{
-		files: (Omit<FileRecord, "createdAt"> & { createdAt: string })[];
-		total: number;
-	}>();
+	const parsed = listFilesQuerySchema.parse({
+		page: query.page,
+		pageSize: query.pageSize,
+		status: query.status ? [query.status] : undefined,
+		search: query.search,
+		sortBy: query.sortBy,
+		sortDir: query.sortDir,
+	});
 
-	return {
-		files: result.files.map((file) => ({
-			...file,
-			createdAt: new Date(file.createdAt),
-		})),
-		total: result.total,
-	};
+	const repository = new DrizzleFileRepository(getDb());
+
+	return repository.list({ ownerId: session.user.id, ...parsed });
 });
 
 export async function FileTableImpl({ query }: { query: FilesQuery }) {
@@ -176,29 +156,7 @@ export async function FileTableImpl({ query }: { query: FilesQuery }) {
 							{formatDate(file.createdAt)}
 						</TableCell>
 						<TableCell>
-							<DropdownMenu>
-								<DropdownMenuTrigger
-									render={<Button variant="ghost" size="icon" />}
-								>
-									<span className="sr-only">Open menu</span>
-									<MoreHorizontal className="size-4" />
-								</DropdownMenuTrigger>
-								<DropdownMenuContent align="end">
-									<DropdownMenuItem>
-										<Download />
-										Download
-									</DropdownMenuItem>
-									<DropdownMenuItem>
-										<Pencil />
-										Rename
-									</DropdownMenuItem>
-									<DropdownMenuSeparator />
-									<DropdownMenuItem variant="destructive">
-										<Trash2 />
-										Delete
-									</DropdownMenuItem>
-								</DropdownMenuContent>
-							</DropdownMenu>
+							<FileRowActions fileId={file.id} fileName={file.fileName} />
 						</TableCell>
 					</TableRow>
 				))}
