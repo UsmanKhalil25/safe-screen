@@ -1,6 +1,7 @@
 "use client";
 
 import { Download, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import Link from "next/link";
 import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -72,7 +73,12 @@ export function FileTableRow({ file }: { file: FileRecord }) {
 			<TableCell>
 				<div className="flex min-w-0 items-center gap-2">
 					<MimeIcon mimeType={file.mimeType} />
-					<span className="truncate font-medium">{file.fileName}</span>
+					<Link
+						href={`/files/${file.id}`}
+						className="truncate font-medium hover:underline"
+					>
+						{file.fileName}
+					</Link>
 				</div>
 			</TableCell>
 			<TableCell>
