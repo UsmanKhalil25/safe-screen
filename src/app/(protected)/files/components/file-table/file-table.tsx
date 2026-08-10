@@ -24,7 +24,10 @@ export function FileTable({ query }: { query: FilesQuery }) {
 						<TableHead className="w-16" />
 					</TableRow>
 				</TableHeader>
-				<Suspense key={JSON.stringify(query)} fallback={<FileTableSkeleton />}>
+				<Suspense
+					key={JSON.stringify(query)}
+					fallback={<FileTableSkeleton pageSize={query.pageSize} />}
+				>
 					<FileTableImpl query={query} />
 				</Suspense>
 			</Table>

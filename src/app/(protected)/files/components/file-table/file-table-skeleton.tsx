@@ -6,14 +6,15 @@ import {
 	TableFooter,
 	TableRow,
 } from "@/components/ui/table";
+import { DEFAULT_PAGE_SIZE } from "@/lib/contracts/files";
 
-const SKELETON_ROW_COUNT = 10;
+export function FileTableSkeleton({ pageSize }: { pageSize?: string }) {
+	const rowCount = Number(pageSize) || DEFAULT_PAGE_SIZE;
 
-export function FileTableSkeleton() {
 	return (
 		<>
 			<TableBody>
-				{Array.from({ length: SKELETON_ROW_COUNT }).map((_, index) => (
+				{Array.from({ length: rowCount }).map((_, index) => (
 					<TableRow key={index}>
 						<TableCell>
 							<Skeleton className="size-4 rounded-[4px]" />

@@ -19,6 +19,7 @@ import {
 import {
 	Pagination,
 	PaginationContent,
+	PaginationEllipsis,
 	PaginationItem,
 	PaginationLink,
 	PaginationNext,
@@ -62,6 +63,61 @@ function buildPageHref(query: FilesQuery, page: number) {
 	params.set("page", String(page));
 
 	return `?${params.toString()}`;
+}
+
+const PAGINATION_ELLIPSIS = "ellipsis" as const;
+const PAGINATION_SIBLING_COUNT = 1;
+
+// 0-indexed page numbers, with runs of hidden pages collapsed into an
+// ellipsis marker. Always keeps the first/last page and a window of
+// siblingCount pages around the current one visible.
+function getPaginationRange(page: number, pageCount: number) {
+	// One less than the space-optimal cutoff (siblingCount * 2 + 5), so an
+	// ellipsis shows even where it only hides a single page number, keeping
+	// the control visually compact at 7 pages instead of only from 8 on.
+	const totalVisible = PAGINATION_SIBLING_COUNT * 2 + 4;
+
+	if (totalVisible >= pageCount) {
+		return Array.from({ length: pageCount }, (_, index) => index);
+	}
+
+	const leftSibling = Math.max(page - PAGINATION_SIBLING_COUNT, 0);
+	const rightSibling = Math.min(page + PAGINATION_SIBLING_COUNT, pageCount - 1);
+	const showLeftEllipsis = leftSibling > 1;
+	const showRightEllipsis = rightSibling < pageCount - 2;
+	const lastPage = pageCount - 1;
+
+	if (!showLeftEllipsis && showRightEllipsis) {
+		const leftRange = Array.from(
+			{ length: 3 + PAGINATION_SIBLING_COUNT * 2 },
+			(_, index) => index,
+		);
+
+		return [...leftRange, PAGINATION_ELLIPSIS, lastPage];
+	}
+
+	if (showLeftEllipsis && !showRightEllipsis) {
+		const rightItemCount = 3 + PAGINATION_SIBLING_COUNT * 2;
+		const rightRange = Array.from(
+			{ length: rightItemCount },
+			(_, index) => lastPage - rightItemCount + 1 + index,
+		);
+
+		return [0, PAGINATION_ELLIPSIS, ...rightRange];
+	}
+
+	const middleRange = Array.from(
+		{ length: rightSibling - leftSibling + 1 },
+		(_, index) => leftSibling + index,
+	);
+
+	return [
+		0,
+		PAGINATION_ELLIPSIS,
+		...middleRange,
+		PAGINATION_ELLIPSIS,
+		lastPage,
+	];
 }
 
 export const getFiles = cache(async (query: FilesQuery) => {
@@ -172,16 +228,22 @@ export async function FileTableImpl({ query }: { query: FilesQuery }) {
 													}
 												/>
 											</PaginationItem>
-											{Array.from({ length: pageCount }, (_, index) => (
-												<PaginationItem key={index}>
-													<PaginationLink
-														href={buildPageHref(query, index)}
-														isActive={index === page}
-													>
-														{index + 1}
-													</PaginationLink>
-												</PaginationItem>
-											))}
+											{getPaginationRange(page, pageCount).map((item, index) =>
+												item === PAGINATION_ELLIPSIS ? (
+													<PaginationItem key={`ellipsis-${index}`}>
+														<PaginationEllipsis />
+													</PaginationItem>
+												) : (
+													<PaginationItem key={item}>
+														<PaginationLink
+															href={buildPageHref(query, item)}
+															isActive={item === page}
+														>
+															{item + 1}
+														</PaginationLink>
+													</PaginationItem>
+												),
+											)}
 											<PaginationItem>
 												<PaginationNext
 													href={buildPageHref(

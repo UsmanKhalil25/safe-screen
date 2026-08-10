@@ -4,6 +4,11 @@ import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+	experimental: {
+		serverActions: {
+			bodySizeLimit: "30mb",
+		},
+	},
 	async redirects() {
 		return [
 			{

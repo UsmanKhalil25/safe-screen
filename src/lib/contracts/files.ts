@@ -3,12 +3,16 @@ import { z } from "zod";
 
 import { files } from "@/db/schema/files";
 
+export const MAX_FILE_SIZE_MB = 25;
+export const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
 export const insertFileSchema = createInsertSchema(files, {
 	fileName: (schema) => schema.min(1),
 	mimeType: (schema) => schema.min(1),
 	sizeBytes: (schema) => schema.positive(),
 	storageKey: (schema) => schema.min(1),
 }).pick({
+	id: true,
 	ownerId: true,
 	fileName: true,
 	mimeType: true,
@@ -17,6 +21,12 @@ export const insertFileSchema = createInsertSchema(files, {
 });
 
 export type CreateFileInput = z.infer<typeof insertFileSchema>;
+
+export const uploadFileMetaSchema = z.object({
+	fileName: z.string().trim().min(1).max(255),
+	mimeType: z.string().min(1),
+	sizeBytes: z.number().int().positive().max(MAX_FILE_SIZE_BYTES),
+});
 
 export const fileSchema = createSelectSchema(files).pick({
 	id: true,

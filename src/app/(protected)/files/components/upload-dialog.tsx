@@ -18,32 +18,18 @@ import {
 import { MimeIcon } from "@/components/ui/mime-icon";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/toast";
-import type { FileRecord } from "@/lib/contracts/files";
 import { formatFileSize, pluralize } from "@/lib/utils";
 
+import { uploadFileAction } from "../actions";
 import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB } from "../constants";
 
-const SIMULATED_BYTES_PER_MS = 20_000;
-const MIN_UPLOAD_MS = 500;
-const MAX_UPLOAD_MS = 3000;
-const TICK_MS = 100;
-
-function estimateUploadDuration(sizeBytes: number) {
-	return Math.min(
-		MAX_UPLOAD_MS,
-		Math.max(MIN_UPLOAD_MS, sizeBytes / SIMULATED_BYTES_PER_MS),
-	);
-}
-
-type UploadStatus = "uploading" | "done" | "error";
+type UploadStatus = "pending" | "uploading" | "done" | "error";
 
 type UploadEntry = {
 	id: string;
 	file: File;
-	progress: number;
 	status: UploadStatus;
-	startedAt: number;
-	durationMs: number;
+	errorMessage?: string;
 };
 
 export function UploadDialog() {
@@ -52,43 +38,54 @@ export function UploadDialog() {
 	const [entries, setEntries] = React.useState<UploadEntry[]>([]);
 	const [isDragging, setIsDragging] = React.useState(false);
 
-	const hasUploading = entries.some((entry) => entry.status === "uploading");
-
-	React.useEffect(() => {
-		if (!hasUploading) return;
-
-		const interval = setInterval(() => {
-			setEntries((current) =>
-				current.map((entry) => {
-					if (entry.status !== "uploading") return entry;
-
-					const elapsed = Date.now() - entry.startedAt;
-					const progress = Math.min(100, (elapsed / entry.durationMs) * 100);
-
-					return {
-						...entry,
-						progress,
-						status: progress >= 100 ? "done" : "uploading",
-					};
-				}),
-			);
-		}, TICK_MS);
-
-		return () => clearInterval(interval);
-	}, [hasUploading]);
-
 	function addFiles(fileList: File[]) {
-		const now = Date.now();
 		const nextEntries = fileList.map<UploadEntry>((file) => ({
 			id: crypto.randomUUID(),
 			file,
-			progress: 0,
-			status: file.size > MAX_FILE_SIZE_BYTES ? "error" : "uploading",
-			startedAt: now,
-			durationMs: estimateUploadDuration(file.size),
+			status: file.size > MAX_FILE_SIZE_BYTES ? "error" : "pending",
+			errorMessage: file.size > MAX_FILE_SIZE_BYTES ? "Too large" : undefined,
 		}));
 
 		setEntries((current) => [...current, ...nextEntries]);
+	}
+
+	async function handleUpload() {
+		const pendingEntries = entries.filter(
+			(entry) => entry.status === "pending",
+		);
+
+		setEntries((current) =>
+			current.map((entry) =>
+				entry.status === "pending" ? { ...entry, status: "uploading" } : entry,
+			),
+		);
+
+		await Promise.all(
+			pendingEntries.map(async (entry) => {
+				try {
+					await uploadFileAction(entry.file);
+					setEntries((current) =>
+						current.map((currentEntry) =>
+							currentEntry.id === entry.id
+								? { ...currentEntry, status: "done" }
+								: currentEntry,
+						),
+					);
+				} catch {
+					setEntries((current) =>
+						current.map((currentEntry) =>
+							currentEntry.id === entry.id
+								? {
+										...currentEntry,
+										status: "error",
+										errorMessage: "Upload failed",
+									}
+								: currentEntry,
+						),
+					);
+				}
+			}),
+		);
 	}
 
 	function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -133,20 +130,9 @@ export function UploadDialog() {
 	}
 
 	function handleDone() {
-		const completedFiles: FileRecord[] = entries
-			.filter((entry) => entry.status === "done")
-			.map((entry) => ({
-				id: crypto.randomUUID(),
-				fileName: entry.file.name,
-				mimeType: entry.file.type,
-				sizeBytes: entry.file.size,
-				status: "active",
-				createdAt: new Date(),
-			}));
-
-		if (completedFiles.length > 0) {
+		if (completedCount > 0) {
 			toast.add({
-				title: `${completedFiles.length} ${pluralize(completedFiles.length, "file")} uploaded`,
+				title: `${completedCount} ${pluralize(completedCount, "file")} uploaded`,
 				type: "success",
 			});
 			router.refresh();
@@ -155,12 +141,16 @@ export function UploadDialog() {
 		setOpen(false);
 	}
 
+	const pendingCount = entries.filter(
+		(entry) => entry.status === "pending",
+	).length;
 	const uploadingCount = entries.filter(
 		(entry) => entry.status === "uploading",
 	).length;
 	const completedCount = entries.filter(
 		(entry) => entry.status === "done",
 	).length;
+	const hasPending = pendingCount > 0;
 
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
@@ -233,10 +223,6 @@ export function UploadDialog() {
 						<div className="max-h-64 overflow-y-auto rounded-lg border">
 							<div className="divide-y">
 								{entries.map((entry) => {
-									const uploadedBytes = Math.round(
-										(entry.progress / 100) * entry.file.size,
-									);
-
 									return (
 										<div
 											key={entry.id}
@@ -247,17 +233,17 @@ export function UploadDialog() {
 												{entry.file.name}
 											</span>
 											<span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-												{entry.status === "uploading"
-													? `${formatFileSize(uploadedBytes)} / ${formatFileSize(entry.file.size)}`
-													: formatFileSize(entry.file.size)}
+												{formatFileSize(entry.file.size)}
 											</span>
 											{entry.status === "uploading" ? (
 												<Spinner className="size-4 text-muted-foreground" />
 											) : entry.status === "done" ? (
 												<Badge variant="secondary">Uploaded</Badge>
-											) : (
-												<Badge variant="destructive">Too large</Badge>
-											)}
+											) : entry.status === "error" ? (
+												<Badge variant="destructive">
+													{entry.errorMessage}
+												</Badge>
+											) : null}
 											<Button
 												variant="ghost"
 												size="icon-sm"
@@ -283,13 +269,23 @@ export function UploadDialog() {
 						<Button variant="outline" type="button" onClick={handleCancel}>
 							Cancel
 						</Button>
-						<Button
-							type="button"
-							disabled={entries.length === 0 || uploadingCount > 0}
-							onClick={handleDone}
-						>
-							Done
-						</Button>
+						{hasPending ? (
+							<Button
+								type="button"
+								disabled={uploadingCount > 0}
+								onClick={handleUpload}
+							>
+								Upload {pendingCount} {pluralize(pendingCount, "file")}
+							</Button>
+						) : (
+							<Button
+								type="button"
+								disabled={entries.length === 0 || uploadingCount > 0}
+								onClick={handleDone}
+							>
+								Done
+							</Button>
+						)}
 					</div>
 				</DialogFooter>
 			</DialogContent>

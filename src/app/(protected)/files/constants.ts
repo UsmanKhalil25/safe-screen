@@ -1,5 +1,7 @@
 import { SORT_COLUMNS } from "@/lib/contracts/files";
 
+export { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB } from "@/lib/contracts/files";
+
 export const FILES_PAGE_TITLE = "Files";
 export const FILES_PAGE_DESCRIPTION =
 	"Documents uploaded for candidate screening.";
@@ -20,6 +22,3 @@ export const FILE_TABLE_COLUMNS = SORT_COLUMNS.map((column) => ({
 	...column,
 	className: FILE_TABLE_COLUMN_WIDTHS[column.value],
 }));
-
-export const MAX_FILE_SIZE_MB = 25;
-export const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
