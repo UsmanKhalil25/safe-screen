@@ -1,6 +1,7 @@
 import { FileTable } from "./components/file-table";
 import type { FilesQuery } from "./components/file-table-impl";
 import { SearchInput } from "./components/search-input";
+import { SortControls } from "./components/sort-controls";
 import { StatusFilter } from "./components/status-filter";
 import { UploadFilesButton } from "./components/upload-files-button";
 
@@ -27,6 +28,7 @@ export default async function FilesPage({
 				<div className="flex items-center gap-2 py-4">
 					<SearchInput />
 					<StatusFilter />
+					<SortControls />
 				</div>
 
 				<FileTable query={query} />

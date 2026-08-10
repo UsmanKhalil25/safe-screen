@@ -1,21 +1,10 @@
-import { ArrowUpDown } from "lucide-react";
-import Link from "next/link";
 import { Suspense } from "react";
 
 import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { SORT_COLUMNS } from "@/lib/contracts/files";
 
 import { FileTableImpl, type FilesQuery } from "./file-table-impl";
 import { FileTableSkeleton } from "./file-table-skeleton";
-
-const SORTABLE_COLUMNS: {
-	id: NonNullable<FilesQuery["sortBy"]>;
-	label: string;
-}[] = [
-	{ id: "fileName", label: "Name" },
-	{ id: "status", label: "Status" },
-	{ id: "sizeBytes", label: "Size" },
-	{ id: "createdAt", label: "Uploaded" },
-];
 
 // table-fixed reads these from the header row and locks every column to
 // them, so neither the skeleton nor real data ever shifts the layout again.
@@ -23,28 +12,12 @@ const SORTABLE_COLUMNS: {
 // does), so fileName gets a real width too, same as the others, rather than
 // being left unspecified — otherwise it silently absorbs 100% of whatever
 // space the fixed columns don't use. Long filenames truncate instead.
-const COLUMN_WIDTHS: Partial<
-	Record<NonNullable<FilesQuery["sortBy"]>, string>
-> = {
+const COLUMN_WIDTHS: Record<(typeof SORT_COLUMNS)[number]["value"], string> = {
 	fileName: "w-80",
 	status: "w-28",
 	sizeBytes: "w-24",
 	createdAt: "w-28",
 };
-
-function buildSortHref(query: FilesQuery, columnId: string) {
-	const params = new URLSearchParams();
-	if (query.search) params.set("search", query.search);
-	if (query.status) params.set("status", query.status);
-	if (query.pageSize) params.set("pageSize", query.pageSize);
-
-	const nextDir =
-		query.sortBy === columnId && query.sortDir === "asc" ? "desc" : "asc";
-	params.set("sortBy", columnId);
-	params.set("sortDir", nextDir);
-
-	return `?${params.toString()}`;
-}
 
 export function FileTable({ query }: { query: FilesQuery }) {
 	return (
@@ -52,15 +25,12 @@ export function FileTable({ query }: { query: FilesQuery }) {
 			<Table className="table-fixed">
 				<TableHeader>
 					<TableRow>
-						{SORTABLE_COLUMNS.map((column) => (
-							<TableHead key={column.id} className={COLUMN_WIDTHS[column.id]}>
-								<Link
-									href={buildSortHref(query, column.id)}
-									className="inline-flex items-center rounded-lg py-1.5 text-sm font-medium hover:bg-muted"
-								>
-									{column.label}
-									<ArrowUpDown className="ml-2 size-4" />
-								</Link>
+						{SORT_COLUMNS.map((column) => (
+							<TableHead
+								key={column.value}
+								className={COLUMN_WIDTHS[column.value]}
+							>
+								{column.label}
 							</TableHead>
 						))}
 						<TableHead className="w-16" />

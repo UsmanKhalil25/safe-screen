@@ -52,3 +52,10 @@ export const listFilesQuerySchema = z.object({
 });
 
 export type ListFilesQuery = z.infer<typeof listFilesQuerySchema>;
+
+export const SORT_COLUMNS = [
+	{ value: "fileName", label: "Name" },
+	{ value: "status", label: "Status" },
+	{ value: "sizeBytes", label: "Size" },
+	{ value: "createdAt", label: "Uploaded" },
+] as const satisfies { value: ListFilesQuery["sortBy"]; label: string }[];

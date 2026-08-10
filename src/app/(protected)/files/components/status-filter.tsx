@@ -5,12 +5,19 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
 	Select,
 	SelectContent,
+	SelectGroup,
 	SelectItem,
+	SelectLabel,
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
 
 const statusOptions = ["all", "active", "deleted"] as const;
+
+const statusItems = statusOptions.map((option) => ({
+	value: option,
+	label: option[0].toUpperCase() + option.slice(1),
+}));
 
 export function StatusFilter() {
 	const router = useRouter();
@@ -26,6 +33,7 @@ export function StatusFilter() {
 
 	return (
 		<Select
+			items={statusItems}
 			value={value}
 			onValueChange={(next: string | null) => {
 				const params = new URLSearchParams(searchParams.toString());
@@ -39,11 +47,14 @@ export function StatusFilter() {
 				<SelectValue className="capitalize" />
 			</SelectTrigger>
 			<SelectContent>
-				{statusOptions.map((option) => (
-					<SelectItem key={option} value={option} className="capitalize">
-						{option}
-					</SelectItem>
-				))}
+				<SelectGroup>
+					<SelectLabel>Status</SelectLabel>
+					{statusOptions.map((option) => (
+						<SelectItem key={option} value={option} className="capitalize">
+							{option}
+						</SelectItem>
+					))}
+				</SelectGroup>
 			</SelectContent>
 		</Select>
 	);
