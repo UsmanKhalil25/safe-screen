@@ -2,7 +2,6 @@ import { Inbox, SearchX } from "lucide-react";
 import { headers } from "next/headers";
 import { cache } from "react";
 
-import { Badge } from "@/components/ui/badge";
 import {
 	Empty,
 	EmptyDescription,
@@ -27,17 +26,11 @@ import {
 import { getDb } from "@/db";
 import { DrizzleFileRepository } from "@/db/repository/file-repository";
 import { getAuth } from "@/lib/auth";
-import {
-	DEFAULT_PAGE_SIZE,
-	listFilesQuerySchema,
-	type FileRecord,
-} from "@/lib/contracts/files";
-import { formatDate, formatFileSize } from "@/lib/utils";
+import { DEFAULT_PAGE_SIZE, listFilesQuerySchema } from "@/lib/contracts/files";
 
-import { FileRowActions } from "./file-row-actions";
-import { FileTypeIcon } from "./file-type-icon";
-import { PageSizeSelect } from "./page-size-select";
-import { PageIdsRegistrar, RowCheckbox } from "./selection";
+import { PageSizeSelect } from "../page-size-select";
+import { PageIdsRegistrar } from "../selection";
+import { FileTableRow } from "./file-table-row";
 
 export type FilesQuery = {
 	page?: string;
@@ -46,11 +39,6 @@ export type FilesQuery = {
 	search?: string;
 	sortBy?: string;
 	sortDir?: string;
-};
-
-const statusVariant: Record<FileRecord["status"], "secondary" | "outline"> = {
-	active: "secondary",
-	deleted: "outline",
 };
 
 function buildPageHref(query: FilesQuery, page: number) {
@@ -131,34 +119,7 @@ export async function FileTableImpl({ query }: { query: FilesQuery }) {
 			<TableBody>
 				<PageIdsRegistrar ids={files.map((file) => file.id)} />
 				{files.map((file) => (
-					<TableRow key={file.id}>
-						<TableCell>
-							<RowCheckbox fileId={file.id} />
-						</TableCell>
-						<TableCell>
-							<div className="flex min-w-0 items-center gap-2">
-								<FileTypeIcon mimeType={file.mimeType} />
-								<span className="truncate font-medium">{file.fileName}</span>
-							</div>
-						</TableCell>
-						<TableCell>
-							<Badge
-								variant={statusVariant[file.status]}
-								className="capitalize"
-							>
-								{file.status}
-							</Badge>
-						</TableCell>
-						<TableCell className="text-muted-foreground">
-							{formatFileSize(file.sizeBytes)}
-						</TableCell>
-						<TableCell className="text-muted-foreground">
-							{formatDate(file.createdAt)}
-						</TableCell>
-						<TableCell>
-							<FileRowActions fileId={file.id} fileName={file.fileName} />
-						</TableCell>
-					</TableRow>
+					<FileTableRow key={file.id} file={file} />
 				))}
 			</TableBody>
 			<TableFooter>

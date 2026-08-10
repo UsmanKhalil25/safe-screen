@@ -26,7 +26,7 @@ const sortDirItems = sortDirValues.map((value) => ({
 	label: sortDirLabels[value],
 }));
 
-export function SortControls() {
+export function SortSelect() {
 	const [{ sortBy, sortDir }, setQuery] = useQueryStates(
 		{
 			sortBy: parseAsStringEnum(sortByValues).withDefault("createdAt"),

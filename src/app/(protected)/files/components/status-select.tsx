@@ -19,7 +19,7 @@ const statusItems = statusOptions.map((option) => ({
 	label: option[0].toUpperCase() + option.slice(1),
 }));
 
-export function StatusFilter() {
+export function StatusSelect() {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();

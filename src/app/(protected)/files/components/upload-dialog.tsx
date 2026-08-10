@@ -1,6 +1,7 @@
 "use client";
 
 import { Upload, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +16,7 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
+import { toast } from "@/components/ui/toast";
 import type { FileRecord } from "@/lib/contracts/files";
 import { formatFileSize } from "@/lib/utils";
 
@@ -48,11 +50,8 @@ type UploadEntry = {
 	durationMs: number;
 };
 
-export function UploadDialog({
-	onUploadComplete,
-}: {
-	onUploadComplete: (files: FileRecord[]) => void;
-}) {
+export function UploadDialog() {
+	const router = useRouter();
 	const [open, setOpen] = React.useState(false);
 	const [entries, setEntries] = React.useState<UploadEntry[]>([]);
 	const [isDragging, setIsDragging] = React.useState(false);
@@ -154,7 +153,11 @@ export function UploadDialog({
 			}));
 
 		if (completedFiles.length > 0) {
-			onUploadComplete(completedFiles);
+			toast.add({
+				title: `${completedFiles.length} file${completedFiles.length === 1 ? "" : "s"} uploaded`,
+				type: "success",
+			});
+			router.refresh();
 		}
 		resetDialog();
 		setOpen(false);

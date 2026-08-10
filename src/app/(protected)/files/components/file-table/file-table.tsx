@@ -3,9 +3,9 @@ import { Suspense } from "react";
 import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SORT_COLUMNS } from "@/lib/contracts/files";
 
+import { SelectAllCheckbox } from "../selection";
 import { FileTableImpl, type FilesQuery } from "./file-table-impl";
 import { FileTableSkeleton } from "./file-table-skeleton";
-import { SelectAllCheckbox } from "./selection";
 
 // table-fixed reads these from the header row and locks every column to
 // them, so neither the skeleton nor real data ever shifts the layout again.
