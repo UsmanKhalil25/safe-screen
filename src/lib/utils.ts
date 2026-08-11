@@ -33,10 +33,9 @@ export function pluralize(
 }
 
 export function triggerDownload(url: string) {
-	const anchor = document.createElement("a");
-	anchor.href = url;
-	anchor.rel = "noopener";
-	document.body.appendChild(anchor);
-	anchor.click();
-	anchor.remove();
+	const iframe = document.createElement("iframe");
+	iframe.style.display = "none";
+	iframe.src = url;
+	document.body.appendChild(iframe);
+	setTimeout(() => iframe.remove(), 10_000);
 }
