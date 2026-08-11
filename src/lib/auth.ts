@@ -29,6 +29,12 @@ function createAuth(db: AuthDatabase, secret?: string, baseURL?: string) {
 			enabled: true,
 		},
 		secret,
+		session: {
+			cookieCache: {
+				enabled: true,
+				maxAge: 300,
+			},
+		},
 	});
 }
 

@@ -40,16 +40,21 @@ export function FileTableRow({ file }: { file: FileRecord }) {
 	const [isDeleting, setIsDeleting] = React.useState(false);
 
 	async function handleDownload() {
-		try {
-			const { results, notFound } = await downloadFilesAction([file.id]);
-			if (notFound.length > 0) {
-				toast.add({ title: "File no longer available", type: "error" });
-				return;
-			}
-			triggerDownload(results[0].url);
-		} catch {
-			toast.add({ title: "Failed to download file", type: "error" });
-		}
+		await toast.promise(
+			(async () => {
+				const { results, notFound } = await downloadFilesAction([file.id]);
+				if (notFound.length > 0) {
+					throw new Error("File no longer available");
+				}
+				triggerDownload(results[0].url);
+			})(),
+			{
+				loading: `Downloading ${file.fileName}…`,
+				success: "Downloaded",
+				error: (error) =>
+					error instanceof Error ? error.message : "Failed to download file",
+			},
+		);
 	}
 
 	async function handleRenameConfirm(nextFileName: string) {
